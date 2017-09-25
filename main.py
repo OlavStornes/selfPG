@@ -10,24 +10,24 @@ from units import *
 class Fight():
     """Class for fights between two parties"""
     def __init__(self, heroes, difficulty):
-        self.heroparty  = heroes
+
+        self.heroparty = heroes
         self.baddieparty = Party()
         self.difficulty = difficulty
         self.createbaddies()
-
-        self.prepareforbattle()
         self.turn = 0
-
-        self.startfight()
+        self.prepareforbattle()
 
 
     def createbaddies(self):
+        """Create enemies in a party"""
         #TODO: MORE VARIATION
         #TODO: IMPLEMENT DIFFICULTY 
         for x in range(self.difficulty):
-            self.baddieparty.join_party(Unit(random.choice(Baddienames), 15, 10, 4))
+            self.baddieparty.join_party(Unit(random.choice(Baddienames), 15, 2, 4))
 
     def prepareforbattle(self):
+        """Initial start of a battle"""
         print("\n\tA FIGHT APPEARS!\n")
         print("Attacking forces :")
         self.heroparty.partyprep(self)
@@ -36,6 +36,7 @@ class Fight():
         self.baddieparty.partyprep(self)
 
         time.sleep(3)
+        self.startfight()
 
 
     def loss(self):
@@ -81,6 +82,46 @@ class Fight():
         self.endofbattle()
 
 
+class Dungeon():
+    def __init__(self, party, rooms):
+        self.heroparty = party
+        self.rooms = rooms
+        self.currentroom = 0
+        self.tick()
+
+    def newroom(self):
+        Fight(self.heroparty, 1)
+
+    def endcondition(self):
+        if self.heroparty.team_alive():
+            print("You are a winner!")
+
+        else:
+            print("Game over")
+    
+    def print_dungeon(self):
+        border = ""
+        mid = ""
+        for i in range(self.rooms):
+            border += "###|"
+            if self.currentroom == i:
+                mid += " X ="
+            else:
+                mid += "   ="
+
+        print (Fore.CYAN +"\tDUNGEON MAP\n\t" + border + "\n\t" + mid + "\n\t" + border, Fore.RESET)
+
+    def tick(self):
+        for i in range(self.rooms):
+            self.print_dungeon()
+            self.newroom()
+            if not self.heroparty.team_alive():
+                break
+            self.currentroom +=1
+        self.endcondition()
+
+
+
 ############################################################################
 
 class Maingame():
@@ -94,22 +135,13 @@ class Maingame():
 
     def createheroparty(self):
         #TODO: BETTER HERO-IMPLEMENTATION
-        dude = Unit("Stronk", 10, 5, 1)
-        otherdude = Unit("Tank", 25, 2, 1)
-
-        self.heroparty.join_party(dude)
-        self.heroparty.join_party(otherdude)
+        self.heroparty.join_party(Unit("Stronk", 10, 5, 1))
+        self.heroparty.join_party(Unit("Tank", 25, 2, 1))
 
 
 
     def run(self):
-        for x in range (1, 5):
-            fight = Fight(self.heroparty, x)
-
-            if not self.heroparty.team_alive():
-                break
-
-
+        Dungeon(self.heroparty, 4)
 
 
 if __name__ == '__main__':
