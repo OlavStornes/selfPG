@@ -7,6 +7,8 @@ class Unit():
         self.name = name
         self.hp = hp
         self.maxhp = hp
+        self.lvl = 1
+        self.xp = 0
         self.stronk = stronk
         self.smart = smart
         self.target = None
@@ -31,9 +33,15 @@ class Unit():
                     potentialtarget = targetlist[i]
                     lowesthp = targetlist[i].hp
             self.get_target(potentialtarget)
+        else:
+            print("%s has no more targets" % self.name)
         
     def is_alive(self):
         return self.hp > 0
+
+    def get_experience(self, amountxp):
+        self.xp += amountxp
+        print ("%s got %d experience!" % (self.name, self.xp))
 
     def attack(self, target):
         #TODO: Randomized damage
@@ -42,7 +50,7 @@ class Unit():
             target.hp -= damage
             print("%s hit %s for %d damage! Target has %d hp left" %(self.name, target.name, damage, target.hp))
 
-            if target.hp < 0:
+            if target.hp <= 0:
                 self.target = False
 
     def defend(self, target):
