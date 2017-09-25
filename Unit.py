@@ -1,4 +1,5 @@
 import random
+from common import *
 
 class Unit():
 
@@ -14,21 +15,21 @@ class Unit():
         
 
     def __str__(self):
-        return("Name: %s \t Health: %d of %d \t Strength: %d" %(self.name, self.hp, self.maxhp, self.stronk))
+        return("Name: %s \t Hp: %d of %d\tStrength: %d" 
+            %(self.name,    self.hp, self.maxhp, self.stronk))
 
     def get_target(self, target):
         print("%s looks towards %s" %(self.name, target.name))
         self.target = target
 
     def search_target(self, targetlist):
-        
+        if team_alive(targetlist):
             potentialtarget = targetlist[0]
             lowesthp = targetlist[0].hp
             for i in targetlist:
                 if i.hp < lowesthp:
                     potentialtarget = targetlist[i]
                     lowesthp = targetlist[i].hp
-        
             self.get_target(potentialtarget)
         
     def is_alive(self):

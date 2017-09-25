@@ -1,16 +1,16 @@
 import time
 import random
-import names
-from Unit import *
+from common import *
+from unit import *
 
 
 class Fight():
-    def __init__(self, heroes):
+    def __init__(self, heroes, difficulty):
         self.heroes  = heroes
         self.baddies = []
+        self.difficulty = difficulty
         self.createbaddies()
         self.prepareforbattle()
-        self.bad_get()
         self.turn = 0
 
     def bad_get(self):
@@ -20,15 +20,22 @@ class Fight():
 
 
     def createbaddies(self):
-
-        for x in range(2):
-            self.baddies.append(Unit(random.choice(names.Baddienames), 10, 1, 4))
+        #TODO: MORE VARIATION
+        for x in range(self.difficulty):
+            self.baddies.append(Unit(random.choice(Baddienames), 10, 1, 4))
 
     def prepareforbattle(self):
+        print("A FIGHT APPEARS!\n\n")
         for unit in self.heroes:
+            print(unit)
             unit.cur_fight = self
         for unit in self.baddies:
+            print(unit)
             unit.cur_fight = self
+
+        time.sleep(3)
+
+        
 
     def loss(self):
         print("Thats a loss.. Remaining units:")
@@ -41,6 +48,8 @@ class Fight():
 
         for unit in self.heroes:
             print(unit)
+        for unit in self.heroes:
+            unit.rest()
 
     def endofbattle(self):
         if len(self.baddies) == 0:
@@ -48,35 +57,32 @@ class Fight():
 
         elif len(self.heroes) == 0:
             self.loss()
-            
+    
+    def teamaction(self, teamlist, targetlist):
+        #TODO: AVOID LIST INDEX OUT OF RANGE - REMOVED TARGET
+        for unit in teamlist:
+            if not unit.target:
+                unit.search_target(targetlist)
+            unit.tick()
+            if unit.alive == False:
+                teamlist.remove(unit)
+
 
     def tick(self):
-
-        
-
-        while len(self.heroes) > 0 and len(self.baddies) > 0:
+        while team_alive(self.heroes) and team_alive(self.baddies):
             print("\n\t\tTURN %d" % self.turn)
             self.turn += 1
-            for unit in self.heroes:
-                if not unit.target:
-                    unit.search_target(self.baddies)
-                unit.tick()
-                if unit.alive == False:
-                    self.heroes.remove(unit)
-
-            for unit in self.baddies:
-                if not unit.target:
-                    unit.search_target()
-                unit.tick()
-                if unit.alive == False:
-                    self.baddies.remove(unit)
+            #HERO TURN
+            self.teamaction(self.heroes, self.baddies)
+            #BADDIE TURN
+            self.teamaction(self.baddies, self.heroes)
 
             time.sleep(1)
 
         self.endofbattle()
 
 
-
+############################################################################
 
 class Maingame():
 
@@ -89,12 +95,19 @@ class Maingame():
         self.run()
 
     def createheroes(self):
+        #TODO: BETTER HERO-IMPLEMENTATION
+        self.heroes.append(Unit("Stornk", 4, 5, 4))
 
-        self.heroes.append(Unit("Stornk", 10, 5, 4))
+
 
     def run(self):
-        fight = Fight(self.heroes)
-        fight.tick()
+
+        for x in range (1, 5):
+            fight = Fight(self.heroes, x)
+            fight.tick()
+
+            if not team_alive(self.heroes):
+                break
 
 
 
