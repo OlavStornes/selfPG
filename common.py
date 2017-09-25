@@ -1,7 +1,5 @@
 
 
-def team_alive(team):
-    return len(team) > 0
 
 
 Baddienames = [

@@ -8,18 +8,33 @@ class Party():
         self.members = []
         self.killed = []
         self.inventory = []
+        self.cur_fight = None
         
 
     def join_party(self, person):
         self.members.append(person)
 
+    def team_alive(self):
+        return len(self.members) > 0
+
+    def team_rest(self):
+        for unit in self.members:
+            unit.rest()
+
+    def partyprep(self, fight):
+        print("A FIGHT APPEARS!\n\n")
+        for unit in self.members:
+            print(unit)
+            unit.cur_fight = fight
+
+
     def tick(self, targetparty):
         #TODO: AVOID LIST INDEX OUT OF RANGE - REMOVED TARGET
         for unit in self.members:
             if not unit.target:
-                unit.search_target(targetparty.members)
+                unit.search_target(targetparty)
             unit.tick()
-            
+
             if unit.alive == False:
                 self.killed.append(unit)
                 self.members.remove(unit)
@@ -49,14 +64,16 @@ class Unit():
         print("%s looks towards %s" %(self.name, target.name))
         self.target = target
 
-    def search_target(self, targetlist):
-        if team_alive(targetlist):
-            potentialtarget = targetlist[0]
-            lowesthp = targetlist[0].hp
-            for i in targetlist:
+    def search_target(self, targetparty):
+
+
+        if targetparty.team_alive():
+            potentialtarget = targetparty.members[0]
+            lowesthp = targetparty.members[0].hp
+            for i in targetparty.members:
                 if i.hp < lowesthp:
-                    potentialtarget = targetlist[i]
-                    lowesthp = targetlist[i].hp
+                    potentialtarget = targetparty.members[i]
+                    lowesthp = targetparty.members[i].hp
             self.get_target(potentialtarget)
         else:
             print("%s has no more targets" % self.name)
