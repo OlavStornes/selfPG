@@ -1,7 +1,7 @@
 import time
 import random
 from common import *
-from unit import *
+from units import *
 
 
 class Fight():
@@ -96,7 +96,7 @@ class Maingame():
 
     def createheroes(self):
         #TODO: BETTER HERO-IMPLEMENTATION
-        self.heroes.append(Unit("Stornk", 4, 5, 4))
+        self.heroes.append(Unit("Stornk", 10, 5, 4))
 
 
 
