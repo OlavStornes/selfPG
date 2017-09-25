@@ -1,6 +1,31 @@
 import random
 from common import *
 
+
+class Party():
+
+    def __init__(self):
+        self.members = []
+        self.killed = []
+        self.inventory = []
+        
+
+    def join_party(self, person):
+        self.members.append(person)
+
+    def tick(self, targetparty):
+        #TODO: AVOID LIST INDEX OUT OF RANGE - REMOVED TARGET
+        for unit in self.members:
+            if not unit.target:
+                unit.search_target(targetparty.members)
+            unit.tick()
+            
+            if unit.alive == False:
+                self.killed.append(unit)
+                self.members.remove(unit)
+
+
+
 class Unit():
 
     def __init__(self, name, hp, stronk, smart):

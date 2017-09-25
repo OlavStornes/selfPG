@@ -35,7 +35,6 @@ class Fight():
 
         time.sleep(3)
 
-        
 
     def loss(self):
         print("Thats a loss.. Remaining units:")
@@ -57,7 +56,7 @@ class Fight():
 
         elif len(self.heroes) == 0:
             self.loss()
-    
+
     def teamaction(self, teamlist, targetlist):
         #TODO: AVOID LIST INDEX OUT OF RANGE - REMOVED TARGET
         for unit in teamlist:
@@ -72,11 +71,10 @@ class Fight():
         while team_alive(self.heroes) and team_alive(self.baddies):
             print("\n\t\tTURN %d" % self.turn)
             self.turn += 1
-            #HERO TURN
+                    #HERO TURN
             self.teamaction(self.heroes, self.baddies)
-            #BADDIE TURN
+                    #BADDIE TURN
             self.teamaction(self.baddies, self.heroes)
-
             time.sleep(1)
 
         self.endofbattle()
@@ -101,7 +99,6 @@ class Maingame():
 
 
     def run(self):
-
         for x in range (1, 5):
             fight = Fight(self.heroes, x)
             fight.tick()
