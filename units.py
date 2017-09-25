@@ -135,9 +135,9 @@ class Unit():
         #TODO: Some sort of heal
         pass
 
-    def tick(self, targetparty):
+    def tick(self, hostileparty):
         if self.target:
             if self.target.is_alive():   
                 self.attack(self.target)
         else:
-            self.search_target(targetparty)
+            self.search_target(hostileparty)
