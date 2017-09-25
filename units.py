@@ -3,7 +3,7 @@ from common import *
 
 
 class Party():
-
+    """Party-class to keep evereything and everyone on the same team organized"""
     def __init__(self):
         self.members = []
         self.killed = []
@@ -29,6 +29,7 @@ class Party():
 
 
     def tick(self, targetparty):
+        """Main loop for a party-fight"""
         #TODO: AVOID LIST INDEX OUT OF RANGE - REMOVED TARGET
         for unit in self.members:
             if not unit.target:
@@ -65,8 +66,9 @@ class Unit():
         self.target = target
 
     def search_target(self, targetparty):
+        """Search for a hostile target"""
 
-
+        #Current strategy : Target the lowest HP-baddie
         if targetparty.team_alive():
             potentialtarget = targetparty.members[0]
             lowesthp = targetparty.members[0].hp

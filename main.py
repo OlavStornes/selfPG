@@ -5,6 +5,7 @@ from units import *
 
 
 class Fight():
+    """Class for fights between two parties"""
     def __init__(self, heroes, difficulty):
         self.heroparty  = heroes
         self.baddieparty = Party()
@@ -50,6 +51,7 @@ class Fight():
 
 
     def tick(self):
+        """Main loop inside a fight"""
         while self.heroparty.team_alive() and self.baddieparty.team_alive():
             print("\n\t\tTURN %d" % self.turn)
             self.turn += 1
@@ -65,7 +67,7 @@ class Fight():
 ############################################################################
 
 class Maingame():
-
+    """The main game"""
     def __init__(self):
         self.heroparty = Party()
         self.createheroparty()
