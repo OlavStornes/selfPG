@@ -1,9 +1,10 @@
 import random
 from common import *
+import time
 
 
 class Party():
-    """Party-class to keep evereything and everyone on the same team organized"""
+    """Party-class to keep everything and everyone on the same team organized"""
     def __init__(self):
         self.members = []
         self.killed = []
@@ -17,6 +18,10 @@ class Party():
     def team_alive(self):
         return len(self.members) > 0
 
+    def team_getexp(self, xp):
+        for unit in self.members:
+            unit.get_experience(xp)
+
     def team_rest(self):
         for unit in self.members:
             unit.rest()
@@ -29,15 +34,16 @@ class Party():
 
     def tick(self, targetparty):
         """Main loop for a party-fight"""
-        #TODO: AVOID LIST INDEX OUT OF RANGE - REMOVED TARGET
         for unit in self.members:
-            if not unit.target:
-                unit.search_target(targetparty)
-            unit.tick()
-
-            if unit.alive == False:
+            if unit.is_alive():
+                unit.tick(targetparty)
+            else:
+                print("%s is killed!" % unit.name)
                 self.killed.append(unit)
                 self.members.remove(unit)
+
+
+        time.sleep(1)
 
 
 
@@ -58,7 +64,7 @@ class Unit():
         
 
     def __str__(self):
-        return("Name: %s \t Hp: %d of %d\tStrength: %d" 
+        return("Name: %s \t Hp: %d/%d\tStrength: %d" 
             %(self.name,    self.hp, self.maxhp, self.stronk))
 
     def get_target(self, target):
@@ -84,16 +90,18 @@ class Unit():
 
     def get_experience(self, amountxp):
         self.xp += amountxp
-        print ("%s got %d experience!" % (self.name, self.xp))
+        print ("%s got %d experience!" % (self.name, amountxp))
 
-        if self.xp > self.nextlvl:
+        if self.xp >= self.nextlvl:
             self.level_up()
 
 
     def level_up(self):
-        hpgain = 10
-        stronkgain = 4
-        smrtgain = 3
+        self.xp -= self.nextlvl
+        self.lvl +=1
+        hpgain = 5
+        stronkgain = 2
+        smrtgain = 1
 
         self.maxhp += hpgain
         self.stronk += stronkgain
@@ -111,7 +119,8 @@ class Unit():
             print("%s hit %s for %d damage! Target has %d hp left" %(self.name, target.name, damage, target.hp))
 
             if target.hp <= 0:
-                self.get_experience(10)
+
+                self.get_experience(3)
                 self.target = None
 
     def defend(self, target):
@@ -126,13 +135,9 @@ class Unit():
         #TODO: Some sort of heal
         pass
 
-    def tick(self):
-        if (self.is_alive()):
-            if self.target:   
+    def tick(self, targetparty):
+        if self.target:
+            if self.target.is_alive():   
                 self.attack(self.target)
-            else:
-                self.target = False
-
         else:
-            print("%s has been killed!" %self.name)
-            self.alive = False
+            self.search_target(targetparty)

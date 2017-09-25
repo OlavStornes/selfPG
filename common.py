@@ -11,3 +11,7 @@ Baddienames = [
                 "Skulltula",
                 "Bigocto",
                 "Bio-Cube"]
+
+
+def changecolor(whatcolor):
+    print(whatcolor, end='')
