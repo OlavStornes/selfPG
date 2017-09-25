@@ -22,7 +22,6 @@ class Party():
             unit.rest()
 
     def partyprep(self, fight):
-        print("A FIGHT APPEARS!\n\n")
         for unit in self.members:
             print(unit)
             unit.cur_fight = fight
@@ -50,6 +49,7 @@ class Unit():
         self.maxhp = hp
         self.lvl = 1
         self.xp = 0
+        self.nextlvl = 10 * self.lvl
         self.stronk = stronk
         self.smart = smart
         self.target = None
@@ -67,7 +67,6 @@ class Unit():
 
     def search_target(self, targetparty):
         """Search for a hostile target"""
-
         #Current strategy : Target the lowest HP-baddie
         if targetparty.team_alive():
             potentialtarget = targetparty.members[0]
@@ -87,6 +86,23 @@ class Unit():
         self.xp += amountxp
         print ("%s got %d experience!" % (self.name, self.xp))
 
+        if self.xp > self.nextlvl:
+            self.level_up()
+
+
+    def level_up(self):
+        hpgain = 10
+        stronkgain = 4
+        smrtgain = 3
+
+        self.maxhp += hpgain
+        self.stronk += stronkgain
+        self.smart += smrtgain
+        self.rest()
+            
+        print("%s Leveled up! Gained %d HP, %d str, %d int" % (self.name, hpgain, stronkgain, smrtgain))
+        print (self)
+
     def attack(self, target):
         #TODO: Randomized damage
         if target:
@@ -95,7 +111,8 @@ class Unit():
             print("%s hit %s for %d damage! Target has %d hp left" %(self.name, target.name, damage, target.hp))
 
             if target.hp <= 0:
-                self.target = False
+                self.get_experience(10)
+                self.target = None
 
     def defend(self, target):
         #TODO: Some sort of block\damage reduction

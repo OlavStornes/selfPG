@@ -1,7 +1,3 @@
-
-
-
-
 Baddienames = [
                 "Bawb",
                 "Beamos",
@@ -12,7 +8,6 @@ Baddienames = [
                 "Big Blin",
                 "Big Deku Baba",
                 "Big Poe",
-                "Big Skulltula",
+                "Skulltula",
                 "Bigocto",
-                "Bio Deku Baba",
-                "Bio-Electric Cube"]
+                "Bio-Cube"]

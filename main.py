@@ -15,9 +15,12 @@ class Fight():
         self.prepareforbattle()
         self.turn = 0
 
+        self.startfight()
+
 
     def createbaddies(self):
         #TODO: MORE VARIATION
+        #TODO: IMPLEMENT DIFFICULTY 
         for x in range(self.difficulty):
             self.baddieparty.join_party(Unit(random.choice(Baddienames), 10, 1, 4))
 
@@ -25,6 +28,8 @@ class Fight():
         print("A FIGHT APPEARS!\n\n")
         self.heroparty.partyprep(self)
 
+        print("Opposing forces :\n")
+        self.baddieparty.partyprep(self)
 
         time.sleep(1)
 
@@ -41,6 +46,7 @@ class Fight():
         for unit in self.heroparty.members:
             print(unit)
         self.heroparty.team_rest()
+        time.sleep(3)
 
     def endofbattle(self):
         if not self.baddieparty.team_alive():
@@ -50,7 +56,7 @@ class Fight():
             self.loss()
 
 
-    def tick(self):
+    def startfight(self):
         """Main loop inside a fight"""
         while self.heroparty.team_alive() and self.baddieparty.team_alive():
             print("\n\t\tTURN %d" % self.turn)
@@ -83,7 +89,6 @@ class Maingame():
     def run(self):
         for x in range (1, 5):
             fight = Fight(self.heroparty, x)
-            fight.tick()
 
             if not self.heroparty.team_alive():
                 break
