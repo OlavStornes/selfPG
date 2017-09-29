@@ -5,6 +5,8 @@ from colorama import Fore
 from common import *
 from units import *
 
+import gui
+
 
 
 class Fight():
@@ -24,7 +26,10 @@ class Fight():
         #TODO: MORE VARIATION
         #TODO: IMPLEMENT DIFFICULTY 
         for x in range(self.difficulty):
-            self.baddieparty.join_party(Unit(random.choice(Baddienames), 15, 2, 4))
+            name = random.choice(Baddienames)
+            hp = random.randint(10, 20)
+            stronk = random.randint(4, 7)
+            self.baddieparty.join_party(Baddie(name, hp, stronk))
 
     def prepareforbattle(self):
         """Initial start of a battle"""
@@ -52,10 +57,11 @@ class Fight():
             print(unit)
 
         self.heroparty.team_getexp(1)
-        self.heroparty.team_rest()
-        time.sleep(3)
+        time.sleep(1)
 
     def endofbattle(self):
+        self.heroparty.team_endoffight()
+
         if not self.baddieparty.team_alive():
             self.victory()
 
@@ -87,14 +93,22 @@ class Dungeon():
         self.heroparty = party
         self.rooms = rooms
         self.currentroom = 0
+        self.dungeon_lvl = self.heroparty.get_teamlevel()
         self.tick()
 
     def newroom(self):
-        Fight(self.heroparty, 1)
+        d10 = roll_d10()
+        if d10 < 7:
+            n_mobs = random.randint(2, 5)
+            Fight(self.heroparty, n_mobs)
+        else:
+            print("Nothing of value was found")
+            self.heroparty.team_rest()
 
     def endcondition(self):
         if self.heroparty.team_alive():
             print("You are a winner!")
+            self.heroparty.team_rest()
 
         else:
             print("Game over")
@@ -108,7 +122,6 @@ class Dungeon():
                 mid += " X ="
             else:
                 mid += "   ="
-
         print (Fore.CYAN +"\tDUNGEON MAP\n\t" + border + "\n\t" + mid + "\n\t" + border, Fore.RESET)
 
     def tick(self):
@@ -124,14 +137,21 @@ class Dungeon():
 
 ############################################################################
 
+
+
+
+
 class Maingame():
     """The main game"""
     def __init__(self):
         self.heroparty = Party()
         self.createheroparty()
+        #Initialize colors
         cr.init()
 
         self.run()
+
+
 
     def createheroparty(self):
         #TODO: BETTER HERO-IMPLEMENTATION
@@ -141,7 +161,10 @@ class Maingame():
 
 
     def run(self):
-        Dungeon(self.heroparty, 4)
+        numberrooms = 3
+        while self.heroparty.team_alive():
+            Dungeon(self.heroparty, numberrooms)
+            numberrooms +=1
 
 
 if __name__ == '__main__':

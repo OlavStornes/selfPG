@@ -18,6 +18,15 @@ class Party():
     def team_alive(self):
         return len(self.members) > 0
 
+    def team_endoffight(self):
+        self.cur_fight = None
+
+    def get_teamlevel(self):
+        tmp = 0
+        for i, point in enumerate(self.members):
+            tmp += point.lvl
+        return tmp
+
     def team_getexp(self, xp):
         for unit in self.members:
             unit.get_experience(xp)
@@ -114,7 +123,7 @@ class Unit():
     def attack(self, target):
         #TODO: Randomized damage
         if target:
-            damage = random.randint(1, self.stronk)
+            damage = random.randint(int(self.stronk/2), self.stronk)
             target.hp -= damage
             print("%s hit %s for %d damage! Target has %d hp left" %(self.name, target.name, damage, target.hp))
 
@@ -131,13 +140,25 @@ class Unit():
         self.hp = self.maxhp
         print("%s rested to full!" % self.name)
 
-    def heal(self):
-        #TODO: Some sort of heal
-        pass
-
     def tick(self, hostileparty):
         if self.target:
-            if self.target.is_alive():   
+            if self.target.is_alive():
                 self.attack(self.target)
         else:
             self.search_target(hostileparty)
+
+
+class Baddie(Unit):
+    def __init__(self, name, hp, stronk):
+        Unit.__init__(self, name, hp, stronk, smart=0)
+
+    def search_target(self, hostileparty):
+        """Enemy targeting: Find a random hero and hit him"""
+        #TODO: AGGRO-abillity from tanks etc
+        if hostileparty.team_alive():
+            self.get_target(random.choice(hostileparty.members))
+
+    def tick(self, hostileparty):
+
+        self.search_target(hostileparty)
+        self.attack(self.target)
