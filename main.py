@@ -1,13 +1,14 @@
 import time
 import random
+import gui
 import colorama as cr
 from colorama import Fore
 from common import *
 from units import *
 
-import gui
 
-
+#Initialize colors
+cr.init()
 
 class Fight():
     """Class for fights between two parties"""
@@ -18,8 +19,11 @@ class Fight():
         self.difficulty = difficulty
         self.createbaddies()
         self.turn = 0
-        self.prepareforbattle()
 
+        self.gui = gui.Party_gui(master=None, maingame=self)
+        self.gui.after(0, self.gui.tick)
+
+        self.prepareforbattle()
 
     def createbaddies(self):
         """Create enemies in a party"""
@@ -146,12 +150,14 @@ class Maingame():
     def __init__(self):
         self.heroparty = Party()
         self.createheroparty()
-        #Initialize colors
-        cr.init()
 
+
+        self.GUI_init()
         self.run()
 
-
+    def GUI_init(self):
+        self.gui = gui.Party_gui()
+        self.gui.tick()
 
     def createheroparty(self):
         #TODO: BETTER HERO-IMPLEMENTATION
@@ -161,11 +167,15 @@ class Maingame():
 
 
     def run(self):
-        numberrooms = 3
+        numberrooms = 1
         while self.heroparty.team_alive():
             Dungeon(self.heroparty, numberrooms)
             numberrooms +=1
 
 
 if __name__ == '__main__':
-    Maingame()
+    #Maingame()
+    party = Party()
+    party.join_party(Unit("Stronk", 20, 8, 1))
+
+    Fight(party, 1)
