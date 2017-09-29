@@ -86,10 +86,10 @@ class Unit():
         if targetparty.team_alive():
             potentialtarget = targetparty.members[0]
             lowesthp = targetparty.members[0].hp
-            for i in targetparty.members:
-                if i.hp < lowesthp:
-                    potentialtarget = targetparty.members[i]
-                    lowesthp = targetparty.members[i].hp
+            for npc in targetparty.members:
+                if npc.hp < lowesthp:
+                    potentialtarget = npc
+                    lowesthp = npc.hp
             self.get_target(potentialtarget)
         else:
             print("%s has no more targets" % self.name)
@@ -146,6 +146,7 @@ class Unit():
                 self.attack(self.target)
         else:
             self.search_target(hostileparty)
+            self.attack(self.target)
 
 
 class Baddie(Unit):

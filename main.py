@@ -155,8 +155,8 @@ class Maingame():
 
     def createheroparty(self):
         #TODO: BETTER HERO-IMPLEMENTATION
-        self.heroparty.join_party(Unit("Stronk", 10, 5, 1))
-        self.heroparty.join_party(Unit("Tank", 25, 2, 1))
+        self.heroparty.join_party(Unit("Stronk", 20, 8, 1))
+        self.heroparty.join_party(Unit("Tank", 40, 6, 1))
 
 
 
