@@ -16,13 +16,13 @@ class Party_gui(tk.Frame):
         #self.test_createparty()
         self.createWidgets()
         self.createText()
-        #self.update_partyframe()
+        self.update_partyframe()
         print("initialised")
 
     def tick(self):
         self.update_idletasks()
         self.update()
-        self.after(10, self.master.tick)
+        #self.after(10, self.master.tick)
 
     def test_damagerandom(self):
         dude = random.choice(self.party.members)
@@ -39,7 +39,7 @@ class Party_gui(tk.Frame):
         name = random.choice(main.Baddienames)
         hp = random.randint(10, 20)
         stronk = random.randint(4, 7)
-        self.party.join_party(main.Unit(name, hp, stronk, 0))
+        self.maingame.heroparty.join_party(main.Unit(name, hp, stronk, 0))
 
         self.T.insert(tk.END, name + " Joined the party!\n")
 

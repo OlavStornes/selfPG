@@ -35,24 +35,27 @@ class Party():
         for unit in self.members:
             unit.rest()
 
-    def partyprep(self, fight):
+    def partyprep(self, fight, targetparty):
+        self.cur_fight = fight
+        self.targetparty = targetparty
         for unit in self.members:
             print(unit)
             unit.cur_fight = fight
 
 
-    def tick(self, targetparty):
+    def tick(self):
         """Main loop for a party-fight"""
         for unit in self.members:
             if unit.is_alive():
-                unit.tick(targetparty)
+                unit.tick(self.targetparty)
+                self.cur_fight.gui.after(1000, self.tick)
             else:
                 print("%s is killed!" % unit.name)
                 self.killed.append(unit)
                 self.members.remove(unit)
 
-
-        time.sleep(1)
+        
+        #time.sleep(1)
 
 
 

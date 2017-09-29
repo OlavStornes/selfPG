@@ -39,12 +39,12 @@ class Fight():
         """Initial start of a battle"""
         print("\n\tA FIGHT APPEARS!\n")
         print("Attacking forces :")
-        self.heroparty.partyprep(self)
+        self.heroparty.partyprep(self, self.baddieparty)
 
         print("\nOpposing forces :")
-        self.baddieparty.partyprep(self)
+        self.baddieparty.partyprep(self, self.baddieparty)
 
-        time.sleep(3)
+        #time.sleep(3)
         self.startfight()
 
 
@@ -61,7 +61,7 @@ class Fight():
             print(unit)
 
         self.heroparty.team_getexp(1)
-        time.sleep(1)
+        #time.sleep(1)
 
     def endofbattle(self):
         self.heroparty.team_endoffight()
@@ -75,21 +75,24 @@ class Fight():
 
     def startfight(self):
         """Main loop inside a fight"""
-        while self.heroparty.team_alive() and self.baddieparty.team_alive():
+        if self.heroparty.team_alive() and self.baddieparty.team_alive():
             print("\n\t\t\tTURN %d" % self.turn)
             self.turn += 1
                     #HERO TURN
             changecolor(Fore.LIGHTBLUE_EX)
-            self.heroparty.tick(self.baddieparty)
+            self.heroparty.tick()
                     #BADDIE TURN
             changecolor(Fore.RED)
-            self.baddieparty.tick(self.heroparty)
+            self.baddieparty.tick()
 
             changecolor(Fore.RESET)
 
+            self.gui.mainloop()
 
 
-        self.endofbattle()
+        else:
+            self.endofbattle()
+            self.gui.mainloop()
 
 
 class Dungeon():
@@ -173,9 +176,11 @@ class Maingame():
             numberrooms +=1
 
 
+
+
 if __name__ == '__main__':
     #Maingame()
     party = Party()
     party.join_party(Unit("Stronk", 20, 8, 1))
 
-    Fight(party, 1)
+    Fight(party, 3)
