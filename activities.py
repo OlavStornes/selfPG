@@ -7,8 +7,8 @@ class Travel():
     def __init__(self, party):
         self.party = party
         self.progress = 0
-        self.distance = 20
-        self.destination = "TEST1"
+        self.distance = TRAVEL_DISTANCE
+        self.destination = TRAVEL_NAME
         self.startjourney()
 
     def __str__(self):
@@ -21,7 +21,7 @@ class Travel():
         return self.distance <= self.progress
 
     def tick(self):
-        self.progress += random.randint(1, 3)
+        self.progress += random.randint(TR_LO, TR_HI)
         if self.arewethereyet():
             self.party.print_t("Arrived at %s!" %(self.destination))
             self.party.activity = None

@@ -22,7 +22,7 @@ class Fight():
         #TODO: IMPLEMENT DIFFICULTY 
         for x in range(self.difficulty):
             name = random.choice(Baddienames)
-            hp = random.randint(10, 20)
+            hp = random.randint(BAD_HP_LO, BAD_HP_HI)
             stronk = random.randint(4, 7)
             self.baddieparty.join_party(Baddie(name, self.baddieparty, hp, stronk))
 

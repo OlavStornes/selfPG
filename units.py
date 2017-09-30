@@ -61,7 +61,7 @@ class Party():
 
 
         else:
-            self.print_t("Lets find a dungeon somewhere!")
+            self.print_t("Lets go explore somewhere!")
             self.activity = a.Travel(self)
 
 
@@ -134,9 +134,9 @@ class Unit():
     def level_up(self):
         self.xp -= self.nextlvl
         self.lvl +=1
-        hpgain = 5
-        stronkgain = 2
-        smrtgain = 1
+        hpgain = LVL_HPGAIN
+        stronkgain = LVL_STRONKGAIN
+        smrtgain = LVL_SMRTGAIN
 
         self.maxhp += hpgain
         self.stronk += stronkgain
@@ -155,7 +155,7 @@ class Unit():
 
             if target.hp <= 0:
 
-                self.get_experience(3)
+                self.get_experience(TEST_XPGET)
                 self.target = None
 
     def defend(self, target):

@@ -10,25 +10,17 @@ class Party_gui(tk.Frame):
     def __init__(self, master=None):
         tk.Frame.__init__(self, master)
         self.pack()
-        self.master.title("selfRPG")
+        self.master.title(PARTY_TITLE)
 
         self.createWidgets()
         self.createText_log()
         self.party = m.Party(self.T_log)
-        #self.init_statusbar()
         self.test_createparty()
 
         self.update_gui()
 
     def test_fight(self):
-        self.party.activity = a.Dungeon(self.party, 2)
-
-    def test_tick(self):
-        self.party.tick()
-        self.after(1000, self.test_tick)
-
-
-
+        self.party.activity = a.Dungeon(self.party, TEST_ROOMS)
 
     def test_createparty(self):
         """DEBUG: Creates a party for testing purposes"""
@@ -40,38 +32,45 @@ class Party_gui(tk.Frame):
         self.T_log.insert(tk.END, string)
 
     def update_statusbar(self):
-        self.statusbar = tk.Label(self, text=self.party.activity).grid(row=0, column=1)
+        self.statusbar = tk.Label(self, text=self.party.activity, bg="green").grid(row=0, column=1)
 
     def update_partyframe(self):
         """Updates party in GUI"""
         #self.statusbar = tk.Label(self, text=self.party.activity).grid(row=0, column=1)
         currentrow = 0
         for i, npc in enumerate(self.party.members):
-            tk.Label(self, text=npc, background="gray50").grid(row=i, column=0, sticky="NW",ipadx=20)
+            tk.Label(self, text=npc, background=PARTY_BG).grid(row=i, column=PARTY_COL, sticky="NW",ipadx=20)
             currentrow = i
         
         currentrow +=1
         
         if self.party.cur_fight:
             for i_2, npc in enumerate(self.party.cur_fight.baddieparty.members):
-                tk.Label(self, text=npc, background="red").grid(row=(i_2+currentrow), column=0, sticky="NW",ipadx=20) 
+                tk.Label(self, text=npc, background=BADDIE_BG).grid(row=(i_2+currentrow), column=PARTY_COL, sticky="NW",ipadx=20) 
+
+    def test_tick(self):
+        """Main-loop with ticks"""
+        self.party.tick()
+        self.update_gui()
+        self.after(GUI_UPDATE_RATE, self.test_fight)
 
 
     def update_gui(self):
+        """Update gui with all elements"""
         self.update_statusbar()
         self.update_partyframe()
-        self.after(1000, self.update_gui)
+
 
 
     def createText_log(self):
         """Create a log for party-related stuff, plus a scrollwheel"""
 
-        self.T_log = tk.Text(self, height=20, width=60)
+        self.T_log = tk.Text(self, height=LOG_HEIGHT, width=LOG_WIDTH)
         self.T_log.grid(row=1, column=1, rowspan= 20)
         self.T_log.insert(tk.END, "Hello Party-log\n")
 
         self.scroll = tk.Scrollbar(self, command=self.T_log.yview)
-        self.scroll.grid(row=1, column= 2, rowspan=20)
+        self.scroll.grid(row=LOG_ROW, column= LOG_COL, rowspan=LOG_ROWSPAN)
 
         #Need to configure this after a scrollwheel is inited
         self.T_log.config(yscrollcommand=self.scroll)
@@ -84,7 +83,7 @@ class Party_gui(tk.Frame):
 
     def createWidgets(self):
         buttonframe = tk.Frame(self)
-        buttonframe.grid(row = 1, column =3, rowspan=2)
+        buttonframe.grid(row = BUT_FRAME_ROW, column = BUT_FRAME_COL, rowspan=BUT_ROWSPAN)
 
 
         tk.Button(buttonframe, text="QUIT", fg="red", command=self.quit).pack()
