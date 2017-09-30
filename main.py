@@ -1,6 +1,5 @@
 import time
 import random
-import gui
 import colorama as cr
 from colorama import Fore
 from common import *
@@ -19,9 +18,6 @@ class Fight():
         self.difficulty = difficulty
         self.createbaddies()
         self.turn = 0
-
-        self.gui = gui.Party_gui(master=None, maingame=self)
-        self.gui.after(0, self.gui.tick)
 
         self.prepareforbattle()
 
@@ -42,10 +38,9 @@ class Fight():
         self.heroparty.partyprep(self, self.baddieparty)
 
         print("\nOpposing forces :")
-        self.baddieparty.partyprep(self, self.baddieparty)
+        self.baddieparty.partyprep(self, self.heroparty)
 
-        #time.sleep(3)
-        self.startfight()
+        self.tick()
 
 
     def loss(self):
@@ -61,85 +56,92 @@ class Fight():
             print(unit)
 
         self.heroparty.team_getexp(1)
-        #time.sleep(1)
+
 
     def endofbattle(self):
-        self.heroparty.team_endoffight()
 
         if not self.baddieparty.team_alive():
             self.victory()
 
         elif not self.heroparty.team_alive():
             self.loss()
+        self.heroparty.team_endoffight()
+
+    def is_fight_active(self):
+        return self.heroparty.team_alive() and self.baddieparty.team_alive()
 
 
-    def startfight(self):
+    def tick(self):
         """Main loop inside a fight"""
         if self.heroparty.team_alive() and self.baddieparty.team_alive():
             print("\n\t\t\tTURN %d" % self.turn)
             self.turn += 1
                     #HERO TURN
             changecolor(Fore.LIGHTBLUE_EX)
-            self.heroparty.tick()
+            self.heroparty.team_attack()
                     #BADDIE TURN
             changecolor(Fore.RED)
-            self.baddieparty.tick()
+            self.baddieparty.team_attack()
 
             changecolor(Fore.RESET)
 
-            self.gui.mainloop()
-
-
         else:
             self.endofbattle()
-            self.gui.mainloop()
 
+
+##################################################
 
 class Dungeon():
     def __init__(self, party, rooms):
         self.heroparty = party
-        self.rooms = rooms
-        self.currentroom = 0
+        self.depth = rooms
+        self.room = 0
         self.dungeon_lvl = self.heroparty.get_teamlevel()
-        self.tick()
+        self.cur_room = None
 
     def newroom(self):
+        """Create a new room. TODO: Get more varied rooms"""
+        self.print_dungeon()
         d10 = roll_d10()
-        if d10 < 7:
-            n_mobs = random.randint(2, 5)
-            Fight(self.heroparty, n_mobs)
+        if d10 < 9:
+            #n_mobs = random.randint(2, 5)
+            n_mobs = 1
+            self.cur_room = Fight(self.heroparty, n_mobs)
         else:
             print("Nothing of value was found")
             self.heroparty.team_rest()
 
-    def endcondition(self):
-        if self.heroparty.team_alive():
-            print("You are a winner!")
-            self.heroparty.team_rest()
 
-        else:
-            print("Game over")
+    def dungeon_complete(self):
+        print("You are a winner of whole dungeon!!!")
+        self.heroparty.team_rest()
+        #Exiting dungeon
+        self.heroparty.activity = None
     
     def print_dungeon(self):
         border = ""
         mid = ""
-        for i in range(self.rooms):
+        for i in range(self.depth):
             border += "###|"
-            if self.currentroom == i:
+            if self.room == i:
                 mid += " X ="
             else:
                 mid += "   ="
         print (Fore.CYAN +"\tDUNGEON MAP\n\t" + border + "\n\t" + mid + "\n\t" + border, Fore.RESET)
 
     def tick(self):
-        for i in range(self.rooms):
-            self.print_dungeon()
-            self.newroom()
-            if not self.heroparty.team_alive():
-                break
-            self.currentroom +=1
-        self.endcondition()
-
+        if self.heroparty.team_alive():
+            if self.heroparty.cur_fight:
+                self.cur_room.tick()
+            else:
+                #If there is no room, generate a new one
+                self.room += 1
+                print(self.room, self.depth)
+                if self.room >= self.depth:
+                    #Victory condition
+                    self.dungeon_complete()
+                else:
+                    self.newroom()
 
 
 ############################################################################
@@ -155,12 +157,8 @@ class Maingame():
         self.createheroparty()
 
 
-        self.GUI_init()
-        self.run()
 
-    def GUI_init(self):
-        self.gui = gui.Party_gui()
-        self.gui.tick()
+        self.run()
 
     def createheroparty(self):
         #TODO: BETTER HERO-IMPLEMENTATION
@@ -180,7 +178,4 @@ class Maingame():
 
 if __name__ == '__main__':
     #Maingame()
-    party = Party()
-    party.join_party(Unit("Stronk", 20, 8, 1))
-
-    Fight(party, 3)
+    pass

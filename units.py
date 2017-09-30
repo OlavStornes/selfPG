@@ -1,5 +1,6 @@
 import random
 from common import *
+import main as m
 import time
 
 
@@ -10,6 +11,7 @@ class Party():
         self.killed = []
         self.inventory = []
         self.cur_fight = None
+        self.activity = None
         
 
     def join_party(self, person):
@@ -42,20 +44,24 @@ class Party():
             print(unit)
             unit.cur_fight = fight
 
-
     def tick(self):
+        if isinstance(self.activity, m.Dungeon):
+            self.activity.tick()
+        else:
+            print("Lets find a dungeon!")
+
+
+
+    def team_attack(self):
         """Main loop for a party-fight"""
         for unit in self.members:
             if unit.is_alive():
                 unit.tick(self.targetparty)
-                self.cur_fight.gui.after(1000, self.tick)
             else:
                 print("%s is killed!" % unit.name)
                 self.killed.append(unit)
                 self.members.remove(unit)
 
-        
-        #time.sleep(1)
 
 
 
@@ -124,7 +130,7 @@ class Unit():
         print (self)
 
     def attack(self, target):
-        #TODO: Randomized damage
+        #TODO: Better randomized damage
         if target:
             damage = random.randint(int(self.stronk/2), self.stronk)
             target.hp -= damage
