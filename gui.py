@@ -1,6 +1,8 @@
 import tkinter as tk
-import main as m
+import events as m
+import activities as a
 import random
+from common import *
 
 
 
@@ -10,29 +12,27 @@ class Party_gui(tk.Frame):
         self.pack()
         self.master.title("selfRPG")
 
-        self.party = m.Party()
-
-        self.test_createparty()
         self.createWidgets()
         self.createText_log()
+        self.party = m.Party(self.T_log)
+        self.test_createparty()
+
         self.update_partyframe()
 
     def test_fight(self):
-        self.party.activity = m.Dungeon(self.party, 2)
+        self.party.activity = a.Dungeon(self.party, 2)
 
     def test_tick(self):
         self.party.tick()
         self.after(1000, self.test_tick)
 
-    def test_damagerandom(self):
-        dude = random.choice(self.party.members)
-        dude.hp -= 10
-        
+
 
 
     def test_createparty(self):
+        """DEBUG: Creates a party for testing purposes"""
 
-        self.party.join_party(m.Unit("Stronk", 20, 8, 1))
+        self.party.join_party(m.Unit("Stronk", self.party, 20, 8, 1))
 
         
     def print_log(self, string):
@@ -40,15 +40,32 @@ class Party_gui(tk.Frame):
 
     def update_partyframe(self):
         """Updates party in GUI"""
+        currentrow = 0
         for i, npc in enumerate(self.party.members):
             tk.Label(self, text=npc, background="gray50").grid(row=i, column=0, sticky="NW",ipadx=20)
+            currentrow = i
+        
+        currentrow +=1
+        
+        if self.party.cur_fight:
+            for i_2, npc in enumerate(self.party.cur_fight.baddieparty.members):
+                tk.Label(self, text=npc, background="red").grid(row=(i_2+currentrow), column=0, sticky="NW",ipadx=20) 
         self.after(1000, self.update_partyframe)
 
 
     def createText_log(self):
-        self.T_log = tk.Text(self, height=20, width=50)
+        """Create a log for party-related stuff, plus a scrollwheel"""
+
+        self.T_log = tk.Text(self, height=20, width=60)
         self.T_log.grid(row=0, column=1, rowspan= 20)
         self.T_log.insert(tk.END, "Hello Party-log\n")
+
+        self.scroll = tk.Scrollbar(self, command=self.T_log.yview)
+        self.scroll.grid(row=0, column= 2, rowspan=20)
+
+        #Need to configure this after a scrollwheel is inited
+        self.T_log.config(yscrollcommand=self.scroll)
+
 
     def insert_txt(self):
         self.T_log.insert(tk.END, "hello team\n")
@@ -57,12 +74,13 @@ class Party_gui(tk.Frame):
 
     def createWidgets(self):
         buttonframe = tk.Frame(self)
-        buttonframe.grid(row = 0, column =2, rowspan=2)
+        buttonframe.grid(row = 0, column =3, rowspan=2)
 
 
         tk.Button(buttonframe, text="QUIT", fg="red", command=self.quit).pack()
-        tk.Button(buttonframe, text="testtick", command=self.test_tick).pack()
+        tk.Button(buttonframe, text="START", fg="green", command=self.test_tick).pack()
         tk.Button(buttonframe, text="testfight", command=self.test_fight).pack()
+        tk.Button(buttonframe, text="testprint", command=self.insert_txt).pack()
 
 
 

@@ -1,21 +1,31 @@
 import random
 from common import *
-import main as m
+import events as m
+import activities as a
 import time
+import tkinter as tk
 
 
 class Party():
     """Party-class to keep everything and everyone on the same team organized"""
-    def __init__(self):
+    def __init__(self, gui_log=None):
         self.members = []
         self.killed = []
         self.inventory = []
         self.cur_fight = None
         self.activity = None
+        self.log = gui_log
         
 
     def join_party(self, person):
+        self.print_t(str(person.name) + " joined the team!")
         self.members.append(person)
+
+    def print_t(self, sentence, fg=None):
+        """Prints inside the party-log of chosen team"""
+        if self.log:
+            self.log.insert(tk.END, str(sentence) + "\n")
+            self.log.see(tk.END)
 
     def team_alive(self):
         return len(self.members) > 0
@@ -41,14 +51,13 @@ class Party():
         self.cur_fight = fight
         self.targetparty = targetparty
         for unit in self.members:
-            print(unit)
             unit.cur_fight = fight
 
     def tick(self):
-        if isinstance(self.activity, m.Dungeon):
+        if isinstance(self.activity, a.Dungeon):
             self.activity.tick()
         else:
-            print("Lets find a dungeon!")
+            self.print_t("Lets find a dungeon!")
 
 
 
@@ -58,7 +67,7 @@ class Party():
             if unit.is_alive():
                 unit.tick(self.targetparty)
             else:
-                print("%s is killed!" % unit.name)
+                self.print_t("%s is killed!" % unit.name)
                 self.killed.append(unit)
                 self.members.remove(unit)
 
@@ -67,8 +76,9 @@ class Party():
 
 class Unit():
 
-    def __init__(self, name, hp, stronk, smart):
+    def __init__(self, name, party, hp, stronk, smart):
         self.name = name
+        self.party = party
         self.hp = hp
         self.maxhp = hp
         self.lvl = 1
@@ -77,16 +87,18 @@ class Unit():
         self.stronk = stronk
         self.smart = smart
         self.target = None
-        self.cur_fight = None
-        self.alive = True
         
 
     def __str__(self):
         return("Name: %s \t Hp: %d/%d\tStrength: %d" 
             %(self.name,    self.hp, self.maxhp, self.stronk))
 
+    def print_t(self, sentence, fg=None):
+        """Print into the party-combat log"""
+        self.party.print_t(sentence)
+
     def get_target(self, target):
-        print("%s looks towards %s" %(self.name, target.name))
+        self.print_t("%s looks towards %s" %(self.name, target.name))
         self.target = target
 
     def search_target(self, targetparty):
@@ -101,14 +113,14 @@ class Unit():
                     lowesthp = npc.hp
             self.get_target(potentialtarget)
         else:
-            print("%s has no more targets" % self.name)
+            self.print_t("%s has no more targets" % self.name)
         
     def is_alive(self):
         return self.hp > 0
 
     def get_experience(self, amountxp):
         self.xp += amountxp
-        print ("%s got %d experience!" % (self.name, amountxp))
+        self.print_t ("%s got %d experience!" % (self.name, amountxp))
 
         if self.xp >= self.nextlvl:
             self.level_up()
@@ -126,15 +138,15 @@ class Unit():
         self.smart += smrtgain
         self.rest()
             
-        print("%s Leveled up! Gained %d HP, %d str, %d int" % (self.name, hpgain, stronkgain, smrtgain))
-        print (self)
+        self.print_t("%s Leveled up! Gained %d HP, %d str, %d int" % (self.name, hpgain, stronkgain, smrtgain))
+
 
     def attack(self, target):
         #TODO: Better randomized damage
         if target:
             damage = random.randint(int(self.stronk/2), self.stronk)
             target.hp -= damage
-            print("%s hit %s for %d damage! Target has %d hp left" %(self.name, target.name, damage, target.hp))
+            self.print_t("%s hit %s for %d damage! Target has %d hp left" %(self.name, target.name, damage, target.hp))
 
             if target.hp <= 0:
 
@@ -147,7 +159,7 @@ class Unit():
 
     def rest(self):
         self.hp = self.maxhp
-        print("%s rested to full!" % self.name)
+        self.print_t("%s rested to full!" % self.name)
 
     def tick(self, hostileparty):
         if self.target:
@@ -159,8 +171,8 @@ class Unit():
 
 
 class Baddie(Unit):
-    def __init__(self, name, hp, stronk):
-        Unit.__init__(self, name, hp, stronk, smart=0)
+    def __init__(self, name, party, hp, stronk):
+        Unit.__init__(self, name, party, hp, stronk, smart=0)
 
     def search_target(self, hostileparty):
         """Enemy targeting: Find a random hero and hit him"""

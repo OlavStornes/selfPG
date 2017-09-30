@@ -15,9 +15,6 @@ Baddienames = [
                 "Bio-Cube"]
 
 
-def changecolor(whatcolor):
-    print(whatcolor, end='')
-
 
 def roll_d6():
     return random.randint(1, 6)
