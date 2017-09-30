@@ -1,5 +1,32 @@
-from common import *
+import random
 import events as M
+from common import *
+
+
+class Travel():
+    def __init__(self, party):
+        self.party = party
+        self.progress = 0
+        self.distance = 20
+        self.destination = "TEST1"
+        self.startjourney()
+
+    def __str__(self):
+        return ("Traveling to %s - traveled %d of %d units" %(self.destination, self.progress, self.distance))
+
+    def startjourney(self):
+        self.party.print_t("Traveling to: %s. Its %d units away" %(self.destination, self.distance))
+
+    def arewethereyet(self):
+        return self.distance <= self.progress
+
+    def tick(self):
+        self.progress += random.randint(1, 3)
+        if self.arewethereyet():
+            self.party.print_t("Arrived at %s!" %(self.destination))
+            self.party.activity = None
+
+
 
 
 class Dungeon():
@@ -9,6 +36,9 @@ class Dungeon():
         self.room = 0
         self.dungeon_lvl = self.heroparty.get_teamlevel()
         self.cur_room = None
+
+    def __str__(self):
+        return ("Wandering in a dungeon. Progress: %d of %d rooms " %(self.room, self.depth))
 
     def newroom(self):
         """Create a new room. TODO: Get more varied rooms"""

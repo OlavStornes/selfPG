@@ -56,8 +56,13 @@ class Party():
     def tick(self):
         if isinstance(self.activity, a.Dungeon):
             self.activity.tick()
+        elif isinstance(self.activity, a.Travel):
+            self.activity.tick()
+
+
         else:
-            self.print_t("Lets find a dungeon!")
+            self.print_t("Lets find a dungeon somewhere!")
+            self.activity = a.Travel(self)
 
 
 

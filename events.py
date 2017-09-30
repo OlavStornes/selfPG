@@ -14,6 +14,8 @@ class Fight():
 
         self.prepareforbattle()
 
+
+
     def createbaddies(self):
         """Create enemies in a party"""
         #TODO: MORE VARIATION

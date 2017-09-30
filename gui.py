@@ -15,9 +15,10 @@ class Party_gui(tk.Frame):
         self.createWidgets()
         self.createText_log()
         self.party = m.Party(self.T_log)
+        #self.init_statusbar()
         self.test_createparty()
 
-        self.update_partyframe()
+        self.update_gui()
 
     def test_fight(self):
         self.party.activity = a.Dungeon(self.party, 2)
@@ -38,8 +39,12 @@ class Party_gui(tk.Frame):
     def print_log(self, string):
         self.T_log.insert(tk.END, string)
 
+    def update_statusbar(self):
+        self.statusbar = tk.Label(self, text=self.party.activity).grid(row=0, column=1)
+
     def update_partyframe(self):
         """Updates party in GUI"""
+        #self.statusbar = tk.Label(self, text=self.party.activity).grid(row=0, column=1)
         currentrow = 0
         for i, npc in enumerate(self.party.members):
             tk.Label(self, text=npc, background="gray50").grid(row=i, column=0, sticky="NW",ipadx=20)
@@ -50,18 +55,23 @@ class Party_gui(tk.Frame):
         if self.party.cur_fight:
             for i_2, npc in enumerate(self.party.cur_fight.baddieparty.members):
                 tk.Label(self, text=npc, background="red").grid(row=(i_2+currentrow), column=0, sticky="NW",ipadx=20) 
-        self.after(1000, self.update_partyframe)
+
+
+    def update_gui(self):
+        self.update_statusbar()
+        self.update_partyframe()
+        self.after(1000, self.update_gui)
 
 
     def createText_log(self):
         """Create a log for party-related stuff, plus a scrollwheel"""
 
         self.T_log = tk.Text(self, height=20, width=60)
-        self.T_log.grid(row=0, column=1, rowspan= 20)
+        self.T_log.grid(row=1, column=1, rowspan= 20)
         self.T_log.insert(tk.END, "Hello Party-log\n")
 
         self.scroll = tk.Scrollbar(self, command=self.T_log.yview)
-        self.scroll.grid(row=0, column= 2, rowspan=20)
+        self.scroll.grid(row=1, column= 2, rowspan=20)
 
         #Need to configure this after a scrollwheel is inited
         self.T_log.config(yscrollcommand=self.scroll)
@@ -74,7 +84,7 @@ class Party_gui(tk.Frame):
 
     def createWidgets(self):
         buttonframe = tk.Frame(self)
-        buttonframe.grid(row = 0, column =3, rowspan=2)
+        buttonframe.grid(row = 1, column =3, rowspan=2)
 
 
         tk.Button(buttonframe, text="QUIT", fg="red", command=self.quit).pack()
