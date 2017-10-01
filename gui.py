@@ -15,9 +15,10 @@ class Party_gui(tk.Frame):
         self.createWidgets()
         self.createText_log()
         self.party = m.Party(self.T_log)
+        self.create_partyframe()
         self.test_createparty()
 
-        self.update_gui()
+        #self.update_gui()
 
     def test_fight(self):
         self.party.activity = a.Dungeon(self.party, TEST_ROOMS)
@@ -25,7 +26,8 @@ class Party_gui(tk.Frame):
     def test_createparty(self):
         """DEBUG: Creates a party for testing purposes"""
 
-        self.party.join_party(m.Unit("Stronk", self.party, 20, 8, 1))
+        self.party.join_party(m.Unit("Stronk1", self.party, 20, 8, 1))
+        self.party.join_party(m.Unit("Stronk2", self.party, 20, 8, 1))
 
         
     def print_log(self, string):
@@ -36,23 +38,28 @@ class Party_gui(tk.Frame):
 
     def update_partyframe(self):
         """Updates party in GUI"""
-        #self.statusbar = tk.Label(self, text=self.party.activity).grid(row=0, column=1)
-        currentrow = 0
-        for i, npc in enumerate(self.party.members):
-            tk.Label(self, text=npc, background=PARTY_BG).grid(row=i, column=PARTY_COL, sticky="NW",ipadx=20)
-            currentrow = i
-        
-        currentrow +=1
-        
-        if self.party.cur_fight:
-            for i_2, npc in enumerate(self.party.cur_fight.baddieparty.members):
-                tk.Label(self, text=npc, background=BADDIE_BG).grid(row=(i_2+currentrow), column=PARTY_COL, sticky="NW",ipadx=20) 
+
+        partystring = ""
+        for i in self.party.members:
+            partystring += str(i) + "\n"
+
+        self.pframe_var.set(partystring[:-1])   #<--- Dirty hack to slice last newline
+
+
+    def create_partyframe(self):
+        """Create a frame where partymembers go"""
+        #TODO: Try to create a child window for spesific characters
+        self.pframe_var = tk.StringVar()
+        self.partyframe = tk.LabelFrame(self, bg="green", text="Partymembers:")
+        tk.Label(self.partyframe, textvariable=self.pframe_var).pack()
+        self.partyframe.grid(row=0 ,column=0, rowspan=10)
+
 
     def test_tick(self):
         """Main-loop with ticks"""
         self.party.tick()
         self.update_gui()
-        self.after(GUI_UPDATE_RATE, self.test_fight)
+        self.after(GUI_UPDATE_RATE, self.test_tick)
 
 
     def update_gui(self):
@@ -66,20 +73,18 @@ class Party_gui(tk.Frame):
         """Create a log for party-related stuff, plus a scrollwheel"""
 
         self.T_log = tk.Text(self, height=LOG_HEIGHT, width=LOG_WIDTH)
-        self.T_log.grid(row=1, column=1, rowspan= 20)
+        self.T_log.grid(row=LOG_ROW, column=LOG_COL, rowspan= LOG_ROWSPAN)
         self.T_log.insert(tk.END, "Hello Party-log\n")
 
         self.scroll = tk.Scrollbar(self, command=self.T_log.yview)
-        self.scroll.grid(row=LOG_ROW, column= LOG_COL, rowspan=LOG_ROWSPAN)
+        self.scroll.grid(row=SCROLL_ROW, column= SCROLL_COL, rowspan=LOG_ROWSPAN)
 
         #Need to configure this after a scrollwheel is inited
         self.T_log.config(yscrollcommand=self.scroll)
 
 
     def insert_txt(self):
-        self.T_log.insert(tk.END, "hello team\n")
-
-
+        print(self.party.members)
 
     def createWidgets(self):
         buttonframe = tk.Frame(self)
@@ -95,6 +100,4 @@ class Party_gui(tk.Frame):
 
 if __name__ == "__main__":
     game = Party_gui()
-
-
     game.mainloop()

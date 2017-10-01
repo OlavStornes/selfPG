@@ -4,6 +4,7 @@ from common import *
 
 
 class Travel():
+    """An activity where the party travels from one point to another"""
     def __init__(self, party):
         self.party = party
         self.progress = 0
@@ -24,7 +25,8 @@ class Travel():
         self.progress += random.randint(TR_LO, TR_HI)
         if self.arewethereyet():
             self.party.print_t("Arrived at %s!" %(self.destination))
-            self.party.activity = None
+
+            self.party.activity = Dungeon(self.party, 3)
 
 
 
