@@ -12,13 +12,12 @@ class Party_gui(tk.Frame):
         self.pack()
         self.master.title(PARTY_TITLE)
 
-        self.createWidgets()
+        self.init_widgets()
+        self.init_menu()
         self.createText_log()
         self.party = m.Party(self.T_log)
         self.create_partyframe()
         self.test_createparty()
-
-        #self.update_gui()
 
     def test_fight(self):
         self.party.activity = a.Dungeon(self.party, TEST_ROOMS)
@@ -48,7 +47,7 @@ class Party_gui(tk.Frame):
 
     def create_partyframe(self):
         """Create a frame where partymembers go"""
-        #TODO: Try to create a child window for spesific characters
+        #TODO: Try to create a child window for specific heroes
         self.pframe_var = tk.StringVar()
         self.partyframe = tk.LabelFrame(self, bg="green", text="Partymembers:")
         tk.Label(self.partyframe, textvariable=self.pframe_var).pack()
@@ -76,17 +75,17 @@ class Party_gui(tk.Frame):
         self.T_log.grid(row=LOG_ROW, column=LOG_COL, rowspan= LOG_ROWSPAN)
         self.T_log.insert(tk.END, "Hello Party-log\n")
 
-        self.scroll = tk.Scrollbar(self, command=self.T_log.yview)
-        self.scroll.grid(row=SCROLL_ROW, column= SCROLL_COL, rowspan=LOG_ROWSPAN)
+        #self.scroll = tk.Scrollbar(self, command=self.T_log.yview)
+        #self.scroll.grid(row=SCROLL_ROW, column= SCROLL_COL, rowspan=LOG_ROWSPAN, sticky=tk.N + tk.S)
 
         #Need to configure this after a scrollwheel is inited
-        self.T_log.config(yscrollcommand=self.scroll)
+        #self.T_log.config(yscrollcommand=self.scroll)
 
 
     def insert_txt(self):
         print(self.party.members)
 
-    def createWidgets(self):
+    def init_widgets(self):
         buttonframe = tk.Frame(self)
         buttonframe.grid(row = BUT_FRAME_ROW, column = BUT_FRAME_COL, rowspan=BUT_ROWSPAN)
 
@@ -95,6 +94,20 @@ class Party_gui(tk.Frame):
         tk.Button(buttonframe, text="START", fg="green", command=self.test_tick).pack()
         tk.Button(buttonframe, text="testfight", command=self.test_fight).pack()
         tk.Button(buttonframe, text="testprint", command=self.insert_txt).pack()
+
+    def init_menu(self):
+        menubar = tk.Menu(self)
+
+        filemenu = tk.Menu(menubar, tearoff=0)
+        #filemenu.add_command(label="Open", command=lambda: print("This feature isnt implemented yet"))
+        #filemenu.add_command(label="Save", command=lambda: print("hello"))
+        filemenu.add_command(label="Start", command=self.test_tick)
+        filemenu.add_separator()
+        filemenu.add_command(label="Exit", command=self.quit)
+        menubar.add_cascade(label="File", menu=filemenu)
+
+        self.master.config(menu=menubar)
+
 
 
 
