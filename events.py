@@ -22,11 +22,19 @@ class Fight():
         """Create enemies in a party"""
         #TODO: MORE VARIATION
         #TODO: IMPLEMENT DIFFICULTY 
-        for x in range(self.difficulty):
+
+        n_mobs = random.randint(1, self.difficulty)
+        baddielvls = self.difficulty - n_mobs
+
+        for x in range(n_mobs):
             name = random.choice(Baddienames)
             hp = random.randint(BAD_HP_LO, BAD_HP_HI)
-            stronk = random.randint(4, 7)
-            self.baddieparty.join_party(Baddie(name, self.baddieparty, hp, stronk))
+            stronk = random.randint(3, 5)
+            self.baddieparty.join_party(Baddie(name, hp, stronk))
+
+        for lvlgain in range(baddielvls):
+            dude = random.choice(self.baddieparty.members)
+            dude.level_up()
 
     def fight_print(self, sentence, fg=None):
         self.heroparty.print_t(sentence)
@@ -34,10 +42,8 @@ class Fight():
     def prepareforbattle(self):
         """Initial start of a battle"""
         self.fight_print("A FIGHT APPEARS!")
-        self.fight_print("Attacking forces :")
         self.heroparty.partyprep(self, self.baddieparty)
 
-        self.fight_print("\nOpposing forces :")
         self.baddieparty.partyprep(self, self.heroparty)
 
 
@@ -48,10 +54,7 @@ class Fight():
 
 
     def victory(self):
-        self.fight_print("Victory!! \nVictors of this battle:")
-
-        for unit in self.heroparty.members:
-            self.fight_print(unit)
+        self.fight_print("Victory!! ")
 
         self.heroparty.team_getexp(1)
 
