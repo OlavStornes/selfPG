@@ -32,7 +32,6 @@ class Party_gui(tk.Frame):
     def __init__(self, master=None):
         tk.Frame.__init__(self, master)
         self.pack()
-        self.master.title(PARTY_TITLE)
         self.debug_tick = tk.IntVar()
 
         self.init_widgets()
@@ -62,7 +61,7 @@ class Party_gui(tk.Frame):
 
     def update_partylist(self, listbox, partylist, party_string):
         listbox.config(height=len(partylist),
-                        width=50)
+                        width=45)
         
         party_string.set(partylist)
 
@@ -79,6 +78,8 @@ class Party_gui(tk.Frame):
         self.pframe_var = tk.StringVar()
         self.partyframe = tk.Listbox(self, 
                         bg="green",
+                        width=0,
+                        height=0,
                         listvariable=self.pframe_var,
                         activestyle="dotbox",
                         exportselection=0
@@ -86,7 +87,7 @@ class Party_gui(tk.Frame):
 
         self.pframe_var.set (self.party.members)
 
-        self.partyframe.grid(row=0 ,column=0, rowspan=5)
+        self.partyframe.grid(row=1 ,column=0, rowspan=MAX_PARTYSIZE, sticky=tk.N)
 
 
 
@@ -94,10 +95,12 @@ class Party_gui(tk.Frame):
 
         self.bframe_var = tk.StringVar()
         self.baddielist = tk.Listbox(self, 
-                                    bg="red", 
+                                    bg="red",
+                                    width=0,
+                                    height=0,
                                     listvariable=self.bframe_var)
 
-        self.baddielist.grid(row=10 ,column=0, rowspan=5)
+        self.baddielist.grid(row=2 ,column=0, rowspan=4, sticky=tk.N)
 
 
     def test_tick(self):
@@ -172,7 +175,17 @@ class Party_gui(tk.Frame):
 
 
 
+class Main_gui(tk.Frame):
+    def __init__(self, master=None):
+        tk.Frame.__init__(self, master)
+        self.pack()
+
+        tk.Button(self, text="Party_gui", command=self.go_party).pack()
+
+
+    def go_party(self):
+        self.partygui = Party_gui(self)
 
 if __name__ == "__main__":
-    game = Party_gui()
+    game = Main_gui()
     game.mainloop()
