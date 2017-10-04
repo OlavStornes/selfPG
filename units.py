@@ -95,8 +95,8 @@ class Unit():
         
 
     def __str__(self):
-        return("Name: %s \t Hp: %d/%d\tStrength: %d" 
-            %(self.name,    self.hp, self.maxhp, self.stronk))
+        return("Name: %s \t Hp: %d/%d\tStrength: %d - LVL %d" 
+            %(self.name,    self.hp, self.maxhp, self.stronk, self.lvl))
 
     def print_t(self, sentence, fg=None):
         """Print into the party-combat log"""

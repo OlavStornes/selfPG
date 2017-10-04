@@ -16,8 +16,11 @@ class Party_gui(tk.Frame):
         self.init_menu()
         self.createText_log()
         self.party = m.Party(self.T_log)
-        self.create_partyframe()
         self.test_createparty()
+        self.create_partyframe()
+
+        self.baddieframe = None
+
 
     def test_fight(self):
         self.party.activity = a.Dungeon(self.party, TEST_ROOMS)
@@ -25,24 +28,25 @@ class Party_gui(tk.Frame):
     def test_createparty(self):
         """DEBUG: Creates a party for testing purposes"""
 
-        self.party.join_party(m.Unit("Stronk1", self.party, 20, 8, 1))
-        self.party.join_party(m.Unit("Stronk2", self.party, 20, 8, 1))
+        self.party.join_party(m.Unit("Stronk1", self.party, 20, 6, 1))
+        self.party.join_party(m.Unit("Stronk2", self.party, 20, 6, 1))
 
         
     def print_log(self, string):
         self.T_log.insert(tk.END, string)
 
     def update_statusbar(self):
-        self.statusbar = tk.Label(self, text=self.party.activity, bg="green").grid(row=0, column=1)
+        self.statusbar = tk.Label(self, text=self.party.activity, bg="darkgreen").grid(row=0, column=1)
 
-    def update_partyframe(self):
+    def update_partyframe(self, partylist, variable_array):
         """Updates party in GUI"""
 
-        partystring = ""
-        for i in self.party.members:
-            partystring += str(i) + "\n"
+        #Clean up partyframe
+        for i in range(len(variable_array)):
+            variable_array[i].set("")
 
-        self.pframe_var.set(partystring[:-1])   #<--- Dirty hack to slice last newline
+        for i, npc in enumerate(partylist):
+            variable_array[i].set(npc)
 
 
     def create_partyframe(self):
@@ -50,8 +54,32 @@ class Party_gui(tk.Frame):
         #TODO: Try to create a child window for specific heroes
         self.pframe_var = tk.StringVar()
         self.partyframe = tk.LabelFrame(self, bg="green", text="Partymembers:")
-        tk.Label(self.partyframe, textvariable=self.pframe_var).pack()
+
+        self.pframe_var_array = []
+
+
+        for i in range(len(self.party.members)):
+            self.pframe_var_array.append(tk.StringVar())
+            tk.Label(self.partyframe, textvariable=self.pframe_var_array[i]).pack()
+
+
         self.partyframe.grid(row=0 ,column=0, rowspan=10)
+
+
+    def create_baddieframe(self):
+
+        self.bframe_var = tk.StringVar()
+        self.baddieframe = tk.LabelFrame(self, bg="red", text="Enemies:")
+
+        self.bframe_var_array = []
+
+
+        for i in range(len(self.party.cur_fight.baddieparty.members)):
+            self.bframe_var_array.append(tk.StringVar())
+            tk.Label(self.baddieframe, textvariable=self.bframe_var_array[i]).pack()
+
+
+        self.baddieframe.grid(row=10 ,column=0, rowspan=10)
 
 
     def test_tick(self):
@@ -64,7 +92,15 @@ class Party_gui(tk.Frame):
     def update_gui(self):
         """Update gui with all elements"""
         self.update_statusbar()
-        self.update_partyframe()
+        self.update_partyframe(self.party.members, self.pframe_var_array)
+
+        if self.party.cur_fight:
+            if self.party.cur_fight.turn == 0:
+                self.create_baddieframe()
+            else:
+                self.update_partyframe(self.party.cur_fight.baddieparty.members, self.bframe_var_array)
+            
+
 
 
 

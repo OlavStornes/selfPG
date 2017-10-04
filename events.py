@@ -11,8 +11,10 @@ class Fight():
         self.difficulty = difficulty
         self.createbaddies()
         self.turn = 0
-
         self.prepareforbattle()
+
+
+        #self.tick()
 
 
 
@@ -37,8 +39,6 @@ class Fight():
 
         self.fight_print("\nOpposing forces :")
         self.baddieparty.partyprep(self, self.heroparty)
-
-        self.tick()
 
 
     def loss(self):

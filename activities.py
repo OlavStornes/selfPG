@@ -48,10 +48,10 @@ class Dungeon():
         d10 = roll_d10()
         if d10 < 9:
             #n_mobs = random.randint(2, 5)
-            n_mobs = 1
+            n_mobs = self.room
             self.cur_room = M.Fight(self.heroparty, n_mobs)
         else:
-            print("Nothing of value was found")
+            self.heroparty.print_t("Nothing of value was found")
             self.heroparty.team_rest()
 
 
