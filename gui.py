@@ -1,8 +1,30 @@
 import tkinter as tk
+import tkinter.ttk as ttk
 import events as m
 import activities as a
 import random
 from common import *
+
+class Character_gui(tk.Toplevel):
+    def __init__(self, master, character):
+        tk.Toplevel.__init__(self, master, borderwidth=5, relief='groove')
+        self.character = character
+
+        self.char_var = tk.StringVar()
+        
+        self.statbox = tk.Label(self, textvariable=self.char_var).pack()
+
+        self.tick_update()
+
+
+
+    def update_gui(self):
+        
+        self.char_var.set(self.character)
+
+    def tick_update(self):
+        self.update_gui()
+        self.after(1000, self.tick_update)
 
 
 
@@ -11,7 +33,6 @@ class Party_gui(tk.Frame):
         tk.Frame.__init__(self, master)
         self.pack()
         self.master.title(PARTY_TITLE)
-
         self.debug_tick = tk.IntVar()
 
         self.init_widgets()
@@ -21,6 +42,7 @@ class Party_gui(tk.Frame):
         self.test_createparty()
         self.create_partyframe()
         self.create_baddieframe()
+        self.create_statusbar()
 
         self.baddieframe = None
 
@@ -45,7 +67,11 @@ class Party_gui(tk.Frame):
         party_string.set(partylist)
 
     def update_statusbar(self):
-        self.statusbar = tk.Label(self, text=self.party.activity, bg="darkgreen").grid(row=0, column=1)
+        self.statusbar_var.set(self.party.activity)
+
+    def create_statusbar(self):
+        self.statusbar_var = tk.StringVar()
+        self.statusbar = tk.Label(self, textvariable=self.statusbar_var, bg="darkgreen").grid(row=0, column=1)
 
     def create_partyframe(self):
         """Create a frame where partymembers go"""
@@ -70,9 +96,6 @@ class Party_gui(tk.Frame):
         self.baddielist = tk.Listbox(self, 
                                     bg="red", 
                                     listvariable=self.bframe_var)
-
-        #self.pframe_var.set (self.party.cur_fight.baddieparty.members)
-
 
         self.baddielist.grid(row=10 ,column=0, rowspan=5)
 
@@ -117,6 +140,11 @@ class Party_gui(tk.Frame):
     def insert_txt(self):
         print(self.party.members)
 
+    def test_open_charwindow(self):
+        top = Character_gui(self, self.party.members[0])
+
+
+
     def init_widgets(self):
         buttonframe = tk.Frame(self)
         buttonframe.grid(row = BUT_FRAME_ROW, column = BUT_FRAME_COL, rowspan=BUT_ROWSPAN)
@@ -127,6 +155,7 @@ class Party_gui(tk.Frame):
         tk.Button(buttonframe, text="testfight", command=self.test_fight).pack()
         tk.Button(buttonframe, text="testtick", command=self.test_tick).pack()
         tk.Checkbutton(buttonframe, text="DB: AUTOTICK", variable=self.debug_tick).pack()
+        tk.Button(buttonframe, text="char1", command=self.test_open_charwindow).pack()
 
     def init_menu(self):
         menubar = tk.Menu(self)
