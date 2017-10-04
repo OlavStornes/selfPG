@@ -1,5 +1,6 @@
 import random
 import events as M
+import units as U
 from common import *
 
 
@@ -10,6 +11,7 @@ class Travel():
         self.progress = 0
         self.distance = TRAVEL_DISTANCE
         self.destination = TRAVEL_NAME
+        self.target = None #To be implemented
         self.startjourney()
 
     def __str__(self):
@@ -27,9 +29,35 @@ class Travel():
             self.party.print_t("Arrived at %s!" %(self.destination))
 
             self.party.activity = Dungeon(self.party, 3)
+            #self.party.activity = Town(self.party)
 
 
+class Town():
+    """A place where you can rest, drink and recruit freshmen"""
+    def __init__(self, party):
+        print("In town")
+        self.party = party
+        self.daysintown = 0
 
+    def recruit(self):
+        self.party.join_party(U.Unit("Newcomer", 10, 3, 6))
+
+    def tick(self):
+        #self.party.team_rest()
+
+        self.daysintown += 1
+
+        if self.daysintown ==2:
+            self.recruit()
+
+        elif self.daysintown > 4:
+            self.party.activity = Travel(self.party)
+        #good rest
+        #attempt sell
+        # use money
+        # recruit
+        # plan yourney
+        # go 
 
 class Dungeon():
     def __init__(self, party, rooms):
@@ -47,9 +75,7 @@ class Dungeon():
         self.print_dungeon()
         d10 = roll_d10()
         if d10 < 9:
-            #n_mobs = random.randint(2, 5)
-            n_mobs = self.room
-            self.cur_room = M.Fight(self.heroparty, n_mobs)
+            self.cur_room = M.Fight(self.heroparty, self.dungeon_lvl)
         else:
             self.heroparty.print_t("Nothing of value was found")
             self.heroparty.team_rest()
