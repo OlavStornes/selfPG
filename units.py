@@ -9,12 +9,16 @@ import tkinter as tk
 class Party():
     """Party-class to keep everything and everyone on the same team organized"""
     def __init__(self, gui_log=None):
+        self.partyname = random.choice(Partynames)
         self.members = []
         self.killed = []
         self.inventory = []
         self.cur_fight = None
         self.activity = None
         self.log = gui_log
+
+    def __str__(self):
+        return str(self.partyname) + ": " + str(self.activity)
         
 
     def join_party(self, person):
