@@ -10,6 +10,8 @@ class Party():
     """Party-class to keep everything and everyone on the same team organized"""
     def __init__(self, gui_log=None):
         self.partyname = random.choice(Partynames)
+        self.pos_x = 50
+        self.pos_y = 50
         self.members = []
         self.killed = []
         self.inventory = []
@@ -29,7 +31,7 @@ class Party():
         else:
             print("Cant recruit anymore: MAX SIZE REACHED")
 
-    def print_t(self, sentence, fg=None):
+    def print_t(self, sentence):
         """Prints inside the party-log of chosen team"""
         if self.log:
             self.log.insert(tk.END, str(sentence) + "\n")
