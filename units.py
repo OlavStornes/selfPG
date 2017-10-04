@@ -18,8 +18,12 @@ class Party():
         
 
     def join_party(self, person):
-        self.print_t(str(person.name) + " joined the team!")
-        self.members.append(person)
+        if len(self.members) + len(self.killed) < MAX_PARTYSIZE:
+            person.party = self
+            self.print_t(str(person.name) + " joined the team!")
+            self.members.append(person)
+        else:
+            print("Cant recruit anymore: MAX SIZE REACHED")
 
     def print_t(self, sentence, fg=None):
         """Prints inside the party-log of chosen team"""
@@ -54,16 +58,13 @@ class Party():
             unit.cur_fight = fight
 
     def tick(self):
-        if isinstance(self.activity, a.Dungeon):
-            self.activity.tick()
-        elif isinstance(self.activity, a.Travel):
-            self.activity.tick()
-
+        if not self.activity:
+            self.print_t("Lets go explore somewhere!")
+            #self.activity = a.Travel(self)
+            self.activity = a.Dungeon(self, 3)
 
         else:
-            self.print_t("Lets go explore somewhere!")
-            self.activity = a.Travel(self)
-
+            self.activity.tick()
 
 
     def team_attack(self):
@@ -81,9 +82,8 @@ class Party():
 
 class Unit():
 
-    def __init__(self, name, party, hp, stronk, smart):
+    def __init__(self, name, hp, stronk, smart):
         self.name = name
-        self.party = party
         self.hp = hp
         self.maxhp = hp
         self.lvl = 1
@@ -93,9 +93,10 @@ class Unit():
         self.smart = smart
         self.target = None
         
+        self.party = None
 
     def __str__(self):
-        return("Name: %s \t Hp: %d/%d\tStrength: %d - LVL %d" 
+        return("Name: %s \t Hp: %d/%d\t Strength: %d - LVL %d" 
             %(self.name,    self.hp, self.maxhp, self.stronk, self.lvl))
 
     def print_t(self, sentence, fg=None):
@@ -176,8 +177,8 @@ class Unit():
 
 
 class Baddie(Unit):
-    def __init__(self, name, party, hp, stronk):
-        Unit.__init__(self, name, party, hp, stronk, smart=0)
+    def __init__(self, name, hp, stronk):
+        Unit.__init__(self, name, hp, stronk, smart=0)
 
     def search_target(self, hostileparty):
         """Enemy targeting: Find a random hero and hit him"""
