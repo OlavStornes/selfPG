@@ -14,6 +14,11 @@ Baddienames = [
                 "Bigocto",
                 "Bio-Cube"]
 
+Partynames = [
+    "wu tang",
+    "hyrule suckas",
+    "gogo gadgets"
+]
 
 
 def roll_d6():
