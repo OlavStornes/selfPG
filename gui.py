@@ -5,9 +5,10 @@ import activities as a
 import random
 from common import *
 
-class Character_gui(tk.Toplevel):
+class Character_gui(tk.Frame):
     def __init__(self, master, character):
-        tk.Toplevel.__init__(self, master, borderwidth=5, relief='groove')
+        tk.Frame.__init__(self, master, borderwidth=5, relief='groove')
+        self.pack()
         self.character = character
 
         self.char_var = tk.StringVar()
@@ -29,32 +30,25 @@ class Character_gui(tk.Toplevel):
 
 
 class Party_gui(tk.Frame):
-    def __init__(self, master=None):
+    def __init__(self, master, party):
         tk.Frame.__init__(self, master)
         self.pack()
         self.debug_tick = tk.IntVar()
 
         self.init_widgets()
-        self.init_menu()
+        self.party = party
         self.createText_log()
-        self.party = m.Party(self.T_log)
-        self.test_createparty()
         self.create_partyframe()
         self.create_baddieframe()
         self.create_statusbar()
 
         self.baddieframe = None
 
+        self.test_tick()
+
 
     def test_fight(self):
         self.party.activity = a.Dungeon(self.party, TEST_ROOMS)
-
-    def test_createparty(self):
-        """DEBUG: Creates a party for testing purposes"""
-
-        self.party.join_party(m.Unit("Stronk1", 20, 6, 1))
-        self.party.join_party(m.Unit("Stronk2", 20, 6, 1))
-
         
     def print_log(self, string):
         self.T_log.insert(tk.END, string)
@@ -62,8 +56,8 @@ class Party_gui(tk.Frame):
     def update_partylist(self, listbox, partylist, party_string):
         listbox.config(height=len(partylist),
                         width=45)
-        
         party_string.set(partylist)
+        
 
     def update_statusbar(self):
         self.statusbar_var.set(self.party.activity)
@@ -74,7 +68,6 @@ class Party_gui(tk.Frame):
 
     def create_partyframe(self):
         """Create a frame where partymembers go"""
-        #TODO: Try to create a child window for specific heroes
         self.pframe_var = tk.StringVar()
         self.partyframe = tk.Listbox(self, 
                         bg="green",
@@ -86,6 +79,7 @@ class Party_gui(tk.Frame):
                         )
 
         self.pframe_var.set (self.party.members)
+        self.partyframe.bind("<Button-1>", func=self.open_charwindow)
 
         self.partyframe.grid(row=1 ,column=0, rowspan=MAX_PARTYSIZE, sticky=tk.N)
 
@@ -133,6 +127,8 @@ class Party_gui(tk.Frame):
         self.T_log.grid(row=LOG_ROW, column=LOG_COL, rowspan= LOG_ROWSPAN)
         self.T_log.insert(tk.END, "Hello Party-log\n")
 
+        self.party.log = self.T_log
+
         #self.scroll = tk.Scrollbar(self, command=self.T_log.yview)
         #self.scroll.grid(row=SCROLL_ROW, column= SCROLL_COL, rowspan=LOG_ROWSPAN, sticky=tk.N + tk.S)
 
@@ -143,8 +139,11 @@ class Party_gui(tk.Frame):
     def insert_txt(self):
         print(self.party.members)
 
-    def test_open_charwindow(self):
-        top = Character_gui(self, self.party.members[0])
+    def open_charwindow(self, event):
+
+        index = self.partyframe.nearest(event.y)
+        top = tk.Toplevel(self)
+        Character_gui(top, self.party.members[index])
 
 
 
@@ -158,33 +157,97 @@ class Party_gui(tk.Frame):
         tk.Button(buttonframe, text="testfight", command=self.test_fight).pack()
         tk.Button(buttonframe, text="testtick", command=self.test_tick).pack()
         tk.Checkbutton(buttonframe, text="DB: AUTOTICK", variable=self.debug_tick).pack()
-        tk.Button(buttonframe, text="char1", command=self.test_open_charwindow).pack()
 
-    def init_menu(self):
-        menubar = tk.Menu(self)
 
-        filemenu = tk.Menu(menubar, tearoff=0)
-        #filemenu.add_command(label="Open", command=lambda: print("This feature isnt implemented yet"))
-        filemenu.add_command(label="DEBUG:recruit", command=self.test_createparty)
-        filemenu.add_command(label="Start", command=self.test_tick)
-        filemenu.add_separator()
-        filemenu.add_command(label="Exit", command=self.quit)
-        menubar.add_cascade(label="File", menu=filemenu)
-
-        self.master.config(menu=menubar)
-
+##########################################################################
 
 
 class Main_gui(tk.Frame):
     def __init__(self, master=None):
         tk.Frame.__init__(self, master)
         self.pack()
+        self.allparties = []
+        self.init_menu()
+        self.init_textlog()
+        self.init_partyoverview()
 
-        tk.Button(self, text="Party_gui", command=self.go_party).pack()
 
 
-    def go_party(self):
-        self.partygui = Party_gui(self)
+        tk.Button(self, text="test_go_party_one", command=self.test_go_party_one).grid()
+        tk.Button(self, text="create_party", command=self.test_createparty).grid()
+
+    def init_partyoverview(self):
+        """Create a frame where partymembers go"""
+        self.allparty_var = tk.StringVar()
+        self.partyframe = tk.Listbox(self, 
+                        bg="green",
+                        width=0,
+                        height=0,
+                        listvariable=self.allparty_var,
+                        activestyle="dotbox",
+                        exportselection=0
+                        )
+
+        self.allparty_var.set(self.allparties)
+        self.partyframe.bind("<Button-1>", func=self.open_partywindow)
+
+        self.partyframe.grid(row=5 ,column=0, rowspan=10, sticky=tk.N)
+
+    def open_partywindow(self, event):
+        index = self.partyframe.nearest(event.y)
+        top = tk.Toplevel(self)
+        Party_gui(top, self.allparties[index])
+
+    def init_textlog(self):
+        """Create a log for main-related stuff"""
+
+        self.Main_log = tk.Text(self, height=LOG_HEIGHT, width=LOG_WIDTH)
+        self.Main_log.grid(row=3, column=3, rowspan= LOG_ROWSPAN)
+        self.Main_log.insert(tk.END, "Welcome to selfRPG\n")
+
+    def init_menu(self):
+        menubar = tk.Menu(self)
+
+        filemenu = tk.Menu(menubar, tearoff=0)
+        #filemenu.add_command(label="Open", command=lambda: print("This feature isnt implemented yet"))
+        #filemenu.add_command(label="DEBUG:recruit", command=self.test_createparty)
+        #filemenu.add_command(label="Start", command=self.test_tick)
+        filemenu.add_separator()
+        filemenu.add_command(label="Exit", command=self.quit)
+        menubar.add_cascade(label="File", menu=filemenu)
+
+        tk.Button(self, text="testtick", command=self.test_tick).grid()
+
+        self.master.config(menu=menubar)
+
+    def test_go_party_one(self):
+
+        self.partygui = tk.Toplevel(self)
+        test = Party_gui(self.partygui, self.allparties[0])
+
+    def update_partylist(self):
+        self.partyframe.config(height=len(self.allparties),width=60)
+
+        self.allparty_var.set(self.allparties)
+
+    def update_gui(self):
+        self.update_partylist()
+        
+    def test_tick(self):
+        """Main-loop with ticks"""
+        for party in self.allparties:
+            party.tick()
+        self.update_gui()
+
+        self.after(GUI_UPDATE_RATE, self.test_tick)
+
+    def test_createparty(self):
+        """DEBUG: Creates a party for testing purposes"""
+        party = m.Party()
+
+        party.join_party(m.Unit("Stronk1", 20, 6, 1))
+        party.join_party(m.Unit("Stronk2", 20, 6, 1))
+        self.allparties.append(party)
 
 if __name__ == "__main__":
     game = Main_gui()
