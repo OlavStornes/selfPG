@@ -9,28 +9,64 @@ class Travel():
     def __init__(self, party):
         self.party = party
         self.progress = 0
-        self.distance = TRAVEL_DISTANCE
         self.destination = TRAVEL_NAME
-        self.target = None #To be implemented
+        #HACK: Must implement better later
+        self.target = Point(100, 50)
+
         self.startjourney()
 
     def __str__(self):
-        return ("Traveling to %s - traveled %d of %d units" %(self.destination, self.progress, self.distance))
+        return ("Traveling to %s - Distance left: %d units" %(self.destination, self.party.pos.distance(self.target)))
 
     def startjourney(self):
-        self.party.print_t("Traveling to: %s. Its %d units away" %(self.destination, self.distance))
+        self.calc_vector()
+        self.party.print_t("Traveling to: %s." %(self.destination))
+        
+    def calc_vector(self):
+        """Calculate what direction and how far a travel must go"""
+        self.vector_x, self.vector_y = self.party.pos.vector(self.target)
 
-    def arewethereyet(self):
-        return self.distance <= self.progress
+
+    def progress_towards_dest(self, tmpvec):
+        """Calculate how far a party will travel a given direction"""
+
+        if tmpvec < 0:
+            #A negative vector = travel north/west
+            dist = -2
+            return dist
+            
+        elif tmpvec > 0:
+            #A positive vector = travel south/east
+            dist = 2
+            return dist
+            
+        elif tmpvec == 0:
+            #This axis is aligned
+            return 0
+            
+
+
 
     def tick(self):
-        self.progress += random.randint(TR_LO, TR_HI)
-        if self.arewethereyet():
+        #HACK: Early access implementation
+
+        if self.vector_x or self.vector_y:
+            travel_x = self.progress_towards_dest(self.vector_x)
+            travel_y = self.progress_towards_dest(self.vector_y)
+
+            #Update vector
+            self.vector_x -= travel_x
+            self.vector_y -= travel_y
+
+            #Update party
+            self.party.pos.x += travel_x
+            self.party.pos.y += travel_y
+
+        else:
+            #Arrived at location
             self.party.print_t("Arrived at %s!" %(self.destination))
-
             self.party.activity = Dungeon(self.party, 3)
-            #self.party.activity = Town(self.party)
-
+        
 
 class Town():
     """A place where you can rest, drink and recruit freshmen"""
