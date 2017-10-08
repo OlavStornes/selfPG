@@ -36,14 +36,9 @@ class Travel():
         if tmpvec < 0:
             #A negative vector = travel north/west
             dist = -2
-
-            
-            
         elif tmpvec > 0:
             #A positive vector = travel south/east
             dist = 2
-
-            
         elif tmpvec == 0:
             #This axis is aligned
             dist = 0
@@ -53,7 +48,6 @@ class Travel():
             dist = tmpvec
 
         return dist
-            
 
 
 
@@ -78,7 +72,7 @@ class Travel():
             self.party.activity = Dungeon(self.party, 3)
         
 
-class Town():
+class Visit_town():
     """A place where you can rest, drink and recruit freshmen"""
     def __init__(self, party):
         print("In town")
@@ -98,6 +92,7 @@ class Town():
 
         elif self.daysintown > 4:
             self.party.activity = Travel(self.party)
+        #TODO:
         #good rest
         #attempt sell
         # use money

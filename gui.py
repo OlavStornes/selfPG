@@ -10,14 +10,9 @@ class Character_gui(tk.Frame):
         tk.Frame.__init__(self, master, borderwidth=5, relief='groove')
         self.pack()
         self.character = character
-
         self.char_var = tk.StringVar()
-        
         self.statbox = tk.Label(self, textvariable=self.char_var).pack()
-
         self.tick_update()
-
-
 
     def update_gui(self):
         
@@ -33,17 +28,13 @@ class Party_gui(tk.Frame):
     def __init__(self, master, party):
         tk.Frame.__init__(self, master)
         self.pack()
-        
-
         self.init_widgets()
         self.party = party
         self.createText_log()
         self.create_partyframe()
         self.create_baddieframe()
         self.create_statusbar()
-
         self.baddieframe = None
-
         self.tick()
 
 
@@ -111,9 +102,7 @@ class Party_gui(tk.Frame):
         buttonframe.grid(row = BUT_FRAME_ROW, column = BUT_FRAME_COL, rowspan=BUT_ROWSPAN)
 
 
-        tk.Button(buttonframe, text="QUIT", fg="red", command=self.quit).pack()
-        tk.Button(buttonframe, text="START", fg="green", command=self.tick).pack()
-        tk.Button(buttonframe, text="testfight", command=self.test_fight).pack()
+        tk.Button(buttonframe, text="Placeholder button", fg="red").pack()
 
     def update_gui(self):
         """Update gui with all elements"""
@@ -139,9 +128,6 @@ class Party_gui(tk.Frame):
         self.party.tick()
         self.update_gui()
 
-        
-        #self.after(GUI_UPDATE_RATE, self.tick)
-
 ##########################################################################
 
 
@@ -151,6 +137,7 @@ class Main_gui(tk.Frame):
         self.debug_tick = tk.IntVar()
         self.pack()
         self.allparties = []
+        self.alltowns = []
         self.init_widgets()
         self.init_menu()
         self.init_textlog()
@@ -164,7 +151,6 @@ class Main_gui(tk.Frame):
     def init_minimap(self):
         self.minimap = tk.Canvas(self, bg="black", width=MAP_WIDTH, height=MAP_HEIGHT)
         self.minimap.grid(row = 0, column=3)
-
         self.blip_dict = {}
 
 
@@ -172,16 +158,14 @@ class Main_gui(tk.Frame):
         """Returns an integer which is a type-ID for this blip on the minimap"""
 
         testframe = tk.Frame(None, relief="flat")
-
-        #HACK: Testing how a frame works for more advanced uses later on
-        #tk.Label(testframe, text="---", bg="black", fg="white").grid(row=0)
-        tk.Label(testframe, text="-X-", bg="black", fg="white").grid(row=1)
-        #tk.Label(testframe, text="---", bg="black", fg="white").grid(row=2)
+        if isinstance(obj, m.Party):
+            tk.Label(testframe, text="-X-", bg="black", fg="white").grid(row=1)
+        elif isinstance(obj, m.Town):
+            tk.Label(testframe, bitmap="info", bg="black", fg="white").grid(row=1)
 
         minimapID = self.minimap.create_window(obj.pos.x, obj.pos.y, window=testframe)
 
         self.blip_dict[obj] = minimapID
-        return minimapID
 
     def update_minimap(self):
         """Update map coordinates"""
@@ -235,6 +219,7 @@ class Main_gui(tk.Frame):
         tk.Button(buttonframe, text="QUIT", fg="red", command=self.quit).pack()
         tk.Button(buttonframe, text="START", fg="green", command=self.test_tick).pack()
         tk.Button(buttonframe, text="Createparty", fg="blue", command=self.test_createparty).pack()
+        tk.Button(buttonframe, text="Create town", fg="blue", command=self.test_createtown).pack()
         
         tk.Checkbutton(buttonframe, text="DB: AUTOTICK", variable=self.debug_tick).pack()
 
@@ -253,6 +238,12 @@ class Main_gui(tk.Frame):
         party.join_party(m.Unit("Stronk2", 20, 6, 1))
         self.minimap_createblip(party)
         self.allparties.append(party)
+
+    def test_createtown(self):
+        """DEBUG: Create a persistent town"""
+        town = m.Town()
+        self.minimap_createblip(town)
+        self.alltowns.append(town)
 
     def update_partylist(self):
         self.partyframe.config(height=len(self.allparties),width=60)

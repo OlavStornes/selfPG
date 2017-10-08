@@ -5,6 +5,15 @@ import activities as a
 import time
 import tkinter as tk
 
+class Town():
+    """A persistent town inside the world"""
+    def __init__(self):
+        self.name = TOWN_NAME
+        self.reputation = None
+
+        x = random.randint(1, MAP_WIDTH)
+        y = random.randint(1, MAP_HEIGHT)
+        self.pos = Point(x, y)
 
 class Party():
     """Party-class to keep everything and everyone on the same team organized"""
