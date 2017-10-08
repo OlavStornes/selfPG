@@ -1,5 +1,25 @@
 import random
 
+
+class Point():
+    """A point to keep track off positions"""
+    def __init__(self, x=None, y=None):
+        self.x = x
+        self.y = y
+
+    def distance(self, target):
+        """Return a distance in units"""
+        #TODO: Proberly implement both directions
+        x_distance = abs(self.x - target.x)
+        y_distance = abs(self.y - target.y)
+        return x_distance + y_distance
+
+    def vector(self, target):
+        """Return a tuple for distance and which way the target point is"""
+        x_vec = target.x - self.x
+        y_vec = target.y - self.y
+        return (x_vec, y_vec)
+
 Baddienames = [
                 "Bawb",
                 "Beamos",
@@ -58,6 +78,9 @@ SCROLL_COL = LOG_COL + 1
 BUT_FRAME_ROW = 1
 BUT_FRAME_COL = 3
 BUT_ROWSPAN = 2
+
+MAP_WIDTH = 484
+MAP_HEIGHT = 269
 
 
 ######  UNITS  ######
