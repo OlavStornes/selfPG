@@ -11,7 +11,10 @@ class Travel():
         self.progress = 0
         self.destination = TRAVEL_NAME
         #HACK: Must implement better later
-        self.target = Point(100, 50)
+        test_x = random.randint(2, MAP_WIDTH)
+        test_y = random.randint(2, MAP_HEIGHT)
+        
+        self.target = Point(test_x, test_y)
 
         self.startjourney()
 
@@ -33,16 +36,23 @@ class Travel():
         if tmpvec < 0:
             #A negative vector = travel north/west
             dist = -2
-            return dist
+
+            
             
         elif tmpvec > 0:
             #A positive vector = travel south/east
             dist = 2
-            return dist
+
             
         elif tmpvec == 0:
             #This axis is aligned
-            return 0
+            dist = 0
+
+        #avoid overshooting
+        if abs(dist) > abs(tmpvec):
+            dist = tmpvec
+
+        return dist
             
 
 
