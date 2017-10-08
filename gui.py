@@ -33,7 +33,7 @@ class Party_gui(tk.Frame):
     def __init__(self, master, party):
         tk.Frame.__init__(self, master)
         self.pack()
-        self.debug_tick = tk.IntVar()
+        
 
         self.init_widgets()
         self.party = party
@@ -114,7 +114,6 @@ class Party_gui(tk.Frame):
         tk.Button(buttonframe, text="QUIT", fg="red", command=self.quit).pack()
         tk.Button(buttonframe, text="START", fg="green", command=self.tick).pack()
         tk.Button(buttonframe, text="testfight", command=self.test_fight).pack()
-        tk.Checkbutton(buttonframe, text="DB: AUTOTICK", variable=self.debug_tick).pack()
 
     def update_gui(self):
         """Update gui with all elements"""
@@ -141,7 +140,7 @@ class Party_gui(tk.Frame):
         self.update_gui()
 
         
-        self.after(GUI_UPDATE_RATE, self.tick)
+        #self.after(GUI_UPDATE_RATE, self.tick)
 
 ##########################################################################
 
@@ -149,28 +148,52 @@ class Party_gui(tk.Frame):
 class Main_gui(tk.Frame):
     def __init__(self, master=None):
         tk.Frame.__init__(self, master)
+        self.debug_tick = tk.IntVar()
         self.pack()
         self.allparties = []
+        self.init_widgets()
         self.init_menu()
         self.init_textlog()
         self.init_partyoverview()
         self.init_minimap()
 
 
-        tk.Button(self, text="create_party", command=self.test_createparty).grid()
+
 
 
     def init_minimap(self):
-        self.minimap = tk.Canvas(self, bg="black")
-        self.minimap.grid(row = 2, column=3)
-        self.balltest = self.minimap.create_oval(10, 10, 20, 20, fill="red")
+        self.minimap = tk.Canvas(self, bg="black", width=MAP_WIDTH, height=MAP_HEIGHT)
+        self.minimap.grid(row = 0, column=3)
+
+        self.blip_dict = {}
+
+
+    def minimap_createblip(self, obj):
+        """Returns an integer which is a type-ID for this blip on the minimap"""
+
+        testframe = tk.Frame(None, relief="flat")
+
+        #HACK: Testing how a frame works for more advanced uses later on
+        #tk.Label(testframe, text="---", bg="black", fg="white").grid(row=0)
+        tk.Label(testframe, text="-X-", bg="black", fg="white").grid(row=1)
+        #tk.Label(testframe, text="---", bg="black", fg="white").grid(row=2)
+
+        minimapID = self.minimap.create_window(obj.pos.x, obj.pos.y, window=testframe)
+
+        self.blip_dict[obj] = minimapID
+        return minimapID
+
+    def update_minimap(self):
+        """Update map coordinates"""
+        for obj, map_id in self.blip_dict.items():
+            self.minimap.coords(map_id, obj.pos.x, obj.pos.y)
 
     def init_partyoverview(self):
-        """Create a frame where partymembers go"""
+        """Create a frame where parties go"""
         self.allparty_var = tk.StringVar()
         self.partyframe = tk.Listbox(self, 
                         bg="green",
-                        width=0,
+                        width=60,
                         height=0,
                         listvariable=self.allparty_var,
                         activestyle="dotbox",
@@ -180,7 +203,7 @@ class Main_gui(tk.Frame):
         self.allparty_var.set(self.allparties)
         self.partyframe.bind("<Button-1>", func=self.open_partywindow)
 
-        self.partyframe.grid(row=1 ,column=0, rowspan=10, sticky=tk.N)
+        self.partyframe.grid(row=0 ,column=0, rowspan=10, sticky=tk.N)
 
     def init_textlog(self):
         """Create a log for main-related stuff"""
@@ -200,9 +223,20 @@ class Main_gui(tk.Frame):
         filemenu.add_command(label="Exit", command=self.quit)
         menubar.add_cascade(label="File", menu=filemenu)
 
-        tk.Button(self, text="testtick", command=self.test_tick).grid()
 
         self.master.config(menu=menubar)
+
+    def init_widgets(self):
+
+        buttonframe = tk.Frame(self)
+        buttonframe.grid(row=6, column=0, sticky="SE")
+
+
+        tk.Button(buttonframe, text="QUIT", fg="red", command=self.quit).pack()
+        tk.Button(buttonframe, text="START", fg="green", command=self.test_tick).pack()
+        tk.Button(buttonframe, text="Createparty", fg="blue", command=self.test_createparty).pack()
+        
+        tk.Checkbutton(buttonframe, text="DB: AUTOTICK", variable=self.debug_tick).pack()
 
     def open_partywindow(self, event):
         index = self.partyframe.nearest(event.y)
@@ -217,17 +251,13 @@ class Main_gui(tk.Frame):
 
         party.join_party(m.Unit("Stronk1", 20, 6, 1))
         party.join_party(m.Unit("Stronk2", 20, 6, 1))
+        self.minimap_createblip(party)
         self.allparties.append(party)
 
     def update_partylist(self):
         self.partyframe.config(height=len(self.allparties),width=60)
 
         self.allparty_var.set(self.allparties)
-
-    def update_minimap(self):
-
-
-        self.minimap.coords(self.balltest, 30, 30, 40, 40)
 
 
     def update_gui(self):
@@ -240,7 +270,8 @@ class Main_gui(tk.Frame):
             party.tick()
         self.update_gui()
 
-        self.after(GUI_UPDATE_RATE, self.test_tick)
+        if self.debug_tick:
+            self.after(GUI_UPDATE_RATE, self.test_tick)
 
 if __name__ == "__main__":
     game = Main_gui()

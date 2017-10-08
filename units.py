@@ -10,14 +10,25 @@ class Party():
     """Party-class to keep everything and everyone on the same team organized"""
     def __init__(self, gui_log=None):
         self.partyname = random.choice(Partynames)
-        self.pos_x = 50
-        self.pos_y = 50
+        # self.pos_x = 200 #HACK:
+        # self.pos_y = 200 #HACK:
         self.members = []
         self.killed = []
         self.inventory = []
         self.cur_fight = None
         self.activity = None
         self.log = gui_log
+
+        self.test_setrandompos()
+
+    def test_setrandompos(self):
+        x = random.randint(1, MAP_WIDTH)
+        y = random.randint(1, MAP_HEIGHT)
+
+        #DEBUG: TO EASE DEBUGGING FOR TRAVEL
+        x = 200
+        y = 130
+        self.pos = Point(x, y)
 
     def __str__(self):
         return str(self.partyname) + ": " + str(self.activity)
@@ -66,8 +77,8 @@ class Party():
     def tick(self):
         if not self.activity:
             self.print_t("Lets go explore somewhere!")
-            #self.activity = a.Travel(self)
-            self.activity = a.Dungeon(self, 3)
+            self.activity = a.Travel(self)
+            #self.activity = a.Dungeon(self, 3)
 
         else:
             self.activity.tick()
@@ -110,7 +121,7 @@ class Unit():
         self.party.print_t(sentence)
 
     def get_target(self, target):
-        self.print_t("%s looks towards %s" %(self.name, target.name))
+        #self.print_t("%s looks towards %s" %(self.name, target.name))
         self.target = target
 
     def search_target(self, targetparty):
