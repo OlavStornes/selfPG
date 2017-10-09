@@ -35,11 +35,9 @@ class Party_gui(tk.Frame):
         self.create_baddieframe()
         self.create_statusbar()
         self.baddieframe = None
+
         self.tick()
 
-
-    def test_fight(self):
-        self.party.activity = a.Dungeon(self.party, TEST_ROOMS)
         
     def print_log(self, string):
         self.T_log.insert(tk.END, string)
@@ -230,12 +228,14 @@ class Main_gui(tk.Frame):
         tk.Button(buttonframe, text="Createparty", fg="blue", command=self.test_createparty).pack()
         tk.Button(buttonframe, text="Create town", fg="blue", command=self.test_createtown).pack()
         
+        self.debug_tick.set(1)
         tk.Checkbutton(buttonframe, text="DB: AUTOTICK", variable=self.debug_tick).pack()
 
     def open_partywindow(self, event):
         index = self.partyframe.nearest(event.y)
         top = tk.Toplevel(self)
-        Party_gui(top, self.allparties[index])
+        tmpgui = Party_gui(top, self.allparties[index])
+
 
 
 
@@ -277,7 +277,8 @@ class Main_gui(tk.Frame):
                 self.allparties.remove(party)
         self.update_gui()
 
-        if self.debug_tick:
+
+        if self.debug_tick.get():
             self.after(GUI_UPDATE_RATE, self.test_tick)
 
 if __name__ == "__main__":

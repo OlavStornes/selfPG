@@ -11,10 +11,9 @@ class Town():
         self.name = TOWN_NAME
         self.reputation = 0
 
-        x = random.randint(1, MAP_WIDTH)
-        y = random.randint(1, MAP_HEIGHT)
+        x = random.randint(10, MAP_WIDTH-10)
+        y = random.randint(10, MAP_HEIGHT-10)
 
-        #HACK: For debugging purposes
         self.pos = Point(x, y)
 
 class Party():
@@ -55,9 +54,12 @@ class Party():
 
     def print_t(self, sentence):
         """Prints inside the party-log of chosen team"""
-        if self.log:
+        #Everything crashes if a party-window has been opened and closed. Avoiding the problem here
+        try:
             self.log.insert(tk.END, str(sentence) + "\n")
             self.log.see(tk.END)
+        except:
+            pass
 
     def team_alive(self):
         return len(self.members) > 0
