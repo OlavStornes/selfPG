@@ -243,8 +243,11 @@ class Main_gui(tk.Frame):
         """DEBUG: Creates a party for testing purposes"""
         party = m.Party()
 
-        party.join_party(m.Unit("Stronk1", 20, 6, 1))
-        party.join_party(m.Unit("Stronk2", 20, 6, 1))
+        party.join_party(m.Unit("Stronk1", 20, 7, 1))
+        party.join_party(m.Unit("Stronk2", 25, 6, 3))
+
+        party.test_gettownmap(self.alltowns)
+
         self.minimap_createblip(party)
         self.allparties.append(party)
 

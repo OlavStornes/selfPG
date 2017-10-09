@@ -36,8 +36,9 @@ class Fight():
             dude = random.choice(self.baddieparty.members)
             dude.level_up()
 
-    def fight_print(self, sentence, fg=None):
-        self.heroparty.print_t(sentence)
+    def fight_print(self, sentence):
+        if sentence:
+            self.heroparty.print_t(sentence)
 
     def prepareforbattle(self):
         """Initial start of a battle"""

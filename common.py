@@ -61,7 +61,7 @@ PARTY_TITLE = "selfRPG"
 
 
 TEST_ROOMS = 2
-GUI_UPDATE_RATE = 500
+GUI_UPDATE_RATE = 250
 PARTY_BG = "gray50"
 BADDIE_BG = "red"
 
@@ -102,6 +102,8 @@ TRAVEL_NAME = "Testlocation"
 
 TR_LO = 1
 TR_HI = 3
+
+RECRUIT_COST = 1000
 
 ######  EVENTS  ######
 

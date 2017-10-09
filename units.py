@@ -9,10 +9,12 @@ class Town():
     """A persistent town inside the world"""
     def __init__(self):
         self.name = TOWN_NAME
-        self.reputation = None
+        self.reputation = 0
 
         x = random.randint(1, MAP_WIDTH)
         y = random.randint(1, MAP_HEIGHT)
+
+        #HACK: For debugging purposes
         self.pos = Point(x, y)
 
 class Party():
@@ -24,11 +26,17 @@ class Party():
         self.members = []
         self.killed = []
         self.inventory = []
+        self.log = gui_log
         self.cur_fight = None
         self.activity = None
-        self.log = gui_log
+        self.townmap = None
+        self.gold = 0
 
         self.test_setrandompos()
+
+    def test_gettownmap(self, townmap):
+        """ALPHA: get worldmap from main game"""
+        self.townmap = townmap
 
     def test_setrandompos(self):
         x = random.randint(1, MAP_WIDTH)
@@ -41,12 +49,9 @@ class Party():
         
 
     def join_party(self, person):
-        if len(self.members) + len(self.killed) < MAX_PARTYSIZE:
-            person.party = self
-            self.print_t(str(person.name) + " joined the team!")
-            self.members.append(person)
-        else:
-            print("Cant recruit anymore: MAX SIZE REACHED")
+        person.party = self
+        self.members.append(person)
+
 
     def print_t(self, sentence):
         """Prints inside the party-log of chosen team"""
@@ -82,7 +87,7 @@ class Party():
 
     def tick(self):
         if not self.activity:
-            self.print_t("Lets go explore somewhere!")
+            self.print_t("Lets go to a town!")
             self.activity = a.Travel(self)
             #self.activity = a.Dungeon(self, 3)
 
