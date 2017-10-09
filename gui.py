@@ -125,8 +125,8 @@ class Party_gui(tk.Frame):
 
     def tick(self):
         """Main-loop with ticks"""
-        self.party.tick()
         self.update_gui()
+        self.after(GUI_UPDATE_RATE, self.tick)
 
 ##########################################################################
 
@@ -166,6 +166,15 @@ class Main_gui(tk.Frame):
         minimapID = self.minimap.create_window(obj.pos.x, obj.pos.y, window=testframe)
 
         self.blip_dict[obj] = minimapID
+
+    def minimap_removeblip(self, obj):
+        """Remove a blip from the map"""
+        minimapID = self.blip_dict[obj]
+        if isinstance(obj, m.Party):
+            self.minimap.delete(minimapID)
+            del self.blip_dict[obj]
+        elif isinstance(obj, m.Town):
+            print("Removal of a town is not yet implemented")
 
     def update_minimap(self):
         """Update map coordinates"""
@@ -258,7 +267,11 @@ class Main_gui(tk.Frame):
     def test_tick(self):
         """Main-loop with ticks"""
         for party in self.allparties:
-            party.tick()
+            if party.team_alive():
+                party.tick()
+            else:
+                self.minimap_removeblip(party)
+                self.allparties.remove(party)
         self.update_gui()
 
         if self.debug_tick:

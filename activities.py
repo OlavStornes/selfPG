@@ -105,7 +105,7 @@ class Dungeon():
         self.heroparty = party
         self.depth = rooms
         self.room = 0
-        self.dungeon_lvl = self.heroparty.get_teamlevel()
+        self.dungeon_lvl = 20# self.heroparty.get_teamlevel()
         self.cur_room = None
 
     def __str__(self):
