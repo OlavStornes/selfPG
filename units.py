@@ -34,9 +34,6 @@ class Party():
         x = random.randint(1, MAP_WIDTH)
         y = random.randint(1, MAP_HEIGHT)
 
-        #DEBUG: TO EASE DEBUGGING FOR TRAVEL
-        x = 200
-        y = 130
         self.pos = Point(x, y)
 
     def __str__(self):
