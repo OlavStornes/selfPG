@@ -3,7 +3,7 @@ from units import *
 
 
 class Fight():
-    """Class for fights between two parties"""
+    """Class for fights between the hero-party and a baddie-party"""
     def __init__(self, heroes, difficulty):
 
         self.heroparty = heroes
@@ -28,9 +28,8 @@ class Fight():
 
         for x in range(n_mobs):
             name = random.choice(Baddienames)
-            hp = random.randint(BAD_HP_LO, BAD_HP_HI)
-            stronk = random.randint(3, 5)
-            self.baddieparty.join_party(Baddie(name, hp, stronk))
+
+            self.baddieparty.join_party(Baddie(name))
 
         for lvlgain in range(baddielvls):
             dude = random.choice(self.baddieparty.members)
@@ -57,7 +56,7 @@ class Fight():
     def victory(self):
         self.fight_print("Victory!! ")
 
-        self.heroparty.team_getexp(1)
+        self.heroparty.team_getexp(10)
 
 
     def endofbattle(self):

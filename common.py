@@ -7,6 +7,7 @@ class Point():
         self.x = x
         self.y = y
 
+
     def distance(self, target):
         """Return a distance in units"""
         #TODO: Proberly implement both directions
@@ -117,7 +118,7 @@ TEST_XPGET = 3
 
 MAX_PARTYSIZE = 4
 
-TOWN_NAME = "Town 1"
+TOWN_NAME = "Townie"
 
 
 ######  ACTIVITIES  ######

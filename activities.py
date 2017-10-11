@@ -106,7 +106,7 @@ class Visit_town():
     def recruit(self):
         if len(self.party.members) + len(self.party.killed) < MAX_PARTYSIZE:
             self.party.gold -= RECRUIT_COST
-            newmember = U.Unit("Newcomer", 10, 3, 6)
+            newmember = U.Fighter("Newcomer")
             self.party.join_party(newmember)
             self.party.print_t(str(newmember.name) + " joined the team!")
         else:
@@ -151,8 +151,8 @@ class Dungeon():
     def newroom(self):
         """Create a new room. TODO: Get more varied rooms"""
         self.print_dungeon()
-        d10 = roll_d10()
-        if d10 < 9:
+        dice = roll_dice(1, 20)
+        if dice < 20:
             self.cur_room = M.Fight(self.heroparty, self.dungeon_lvl)
         else:
             self.heroparty.print_t("Nothing of value was found")

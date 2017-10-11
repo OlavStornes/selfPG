@@ -66,6 +66,8 @@ class Party():
 
     def team_endoffight(self):
         self.cur_fight = None
+        for npc in self.members:
+            npc.target = None
 
     def get_teamlevel(self):
         tmp = 0
@@ -111,7 +113,7 @@ class Party():
 
 
 class Unit():
-
+    """The groundwork for every npc"""
     def __init__(self, name):
         self.name = name
         self.maxhp = 100
@@ -129,6 +131,7 @@ class Unit():
     def __str__(self):
         return("Name: %s \t Hp: %d/%d\t Strength: %d - LVL %d" 
             %(self.name,    self.hp, self.maxhp, self.stronk, self.lvl))
+
 
     def print_t(self, sentence, fg=None):
         """Print into the party-combat log"""
@@ -170,8 +173,6 @@ class Unit():
         self.maxhp += increase_stat(self.statgrowth["hp"])
         self.stronk += increase_stat(self.statgrowth["stronk"])
         self.smart += increase_stat(self.statgrowth["smart"])
-        
-
 
     def level_up(self):
         self.exp -= self.nextlvl
@@ -181,9 +182,6 @@ class Unit():
         self.nextlvl = int(XP_BASE * (self.lvl ** XP_EXPONENT))
 
         self.increase_all_stat()
-
-        print (self.statgrowth)
-        print(self.lvl, self.nextlvl, self.stronk, self.hp)
         self.print_t("%s Leveled up!" % (self.name))
 
 
@@ -196,7 +194,7 @@ class Unit():
 
             if target.hp <= 0:
 
-                self.get_experience(TEST_XPGET)
+                self.get_experience(int(target.lvl * 10))
                 self.target = None
 
     def defend(self, target):
@@ -208,23 +206,31 @@ class Unit():
         self.print_t("%s rested to full!" % self.name)
 
     def tick(self, hostileparty):
+
         if self.target:
             if self.target.is_alive():
                 self.attack(self.target)
-        else:
-            self.search_target(hostileparty)
-            self.attack(self.target)
+                return
+
+        self.search_target(hostileparty)
+        self.attack(self.target)
 
 class Fighter(Unit):
     """A fighter that specialies in melee. Stronk dude, but not so smart"""
-    def __init__(self, name, hp, stronk, smart):
-        Unit.__init__(self, name, hp, stronk, smart)
+    def __init__(self, name):
+        Unit.__init__(self, name)
+        self.statgrowth = {"hp": "med", "stronk": "high", "smart": "low"}
 
 
 
 class Baddie(Unit):
-    def __init__(self, name, hp, stronk):
-        Unit.__init__(self, name, hp, stronk, smart=0)
+    def __init__(self, name):
+        Unit.__init__(self, name)
+        #NOTE: For now they have an disadvantage
+        self.hp = int(self.hp * 0.75)
+        self.maxhp = self.hp
+        self.stronk = int(self.stronk * 0.75)
+        self.statgrowth = {"hp": "low", "stronk": "low", "smart": "low"}
 
     def search_target(self, hostileparty):
         """Enemy targeting: Find a random hero and hit him"""
