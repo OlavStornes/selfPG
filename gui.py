@@ -11,13 +11,36 @@ class Character_gui(tk.Frame):
         self.pack()
         self.character = character
         self.char_var = tk.StringVar()
-        self.statbox = tk.Label(self, textvariable=self.char_var).pack()
-        tk.Button(self, text="LeVEL UP", command=character.level_up).pack()
+        self.init_detailedstats()
+        #self.statbox = tk.Label(self, textvariable=self.char_var).pack()
+        #tk.Button(self, text="DB: LeVEL UP", command=character.level_up).pack() 
         self.tick_update()
 
     def update_gui(self):
         
-        self.char_var.set(self.character)
+        name = self.character.name + "\n"
+        hp = str(self.character.hp) + "/" + str(self.character.maxhp)+ "\n"
+        lvl =  str(self.character.lvl)+ "\n"
+        exp =  str(self.character.exp)+ "\n"
+        nextlvl = str(self.character.nextlvl)+ "\n"
+        stronk = str(self.character.stronk)+ "\n"
+        smart = str(self.character.smart)+ "\n"
+        party = str(self.character.party.partyname)
+
+        varstring = name + hp + lvl + exp + nextlvl + stronk + smart + party
+
+        self.char_var.set(varstring)
+
+    def init_detailedstats(self):
+
+        #self.statframe = tk.LabelFrame(self, text="STATS", labelanchor="n").pack()
+        statvar = ttk.Label(self, textvariable=self.char_var).grid(row=0, column=1)
+
+        staticstring = "Name: \n HP: \n Lvl: \n Experience: \n Next level: \n Stronk: \n Smart: \n Partyname:"
+        
+        statname = ttk.Label(self, text=staticstring, justify="right").grid(row=0, column=0)
+        
+
 
     def tick_update(self):
         self.update_gui()
@@ -143,6 +166,9 @@ class Main_gui(tk.Frame):
         self.init_partyoverview()
         self.init_minimap()
 
+        #Start with one town existing
+        self.createtown_random()
+
 
 
 
@@ -204,6 +230,9 @@ class Main_gui(tk.Frame):
         self.Main_log.grid(row=3, column=3, rowspan= LOG_ROWSPAN)
         self.Main_log.insert(tk.END, "Welcome to selfRPG\n")
 
+    def print_mainlog(self, string):
+        self.Main_log.insert(tk.END, string + "\n")
+
     def init_menu(self):
         menubar = tk.Menu(self)
 
@@ -227,7 +256,7 @@ class Main_gui(tk.Frame):
         tk.Button(buttonframe, text="QUIT", fg="red", command=self.quit).pack()
         tk.Button(buttonframe, text="START", fg="green", command=self.test_tick).pack()
         tk.Button(buttonframe, text="Createparty", fg="blue", command=self.test_createparty).pack()
-        tk.Button(buttonframe, text="Create town", fg="blue", command=self.test_createtown).pack()
+        tk.Button(buttonframe, text="Create town", fg="blue", command=self.createtown_random).pack()
         
         self.debug_tick.set(1)
         tk.Checkbutton(buttonframe, text="DB: AUTOTICK", variable=self.debug_tick).pack()
@@ -244,17 +273,19 @@ class Main_gui(tk.Frame):
         """DEBUG: Creates a party for testing purposes"""
         party = m.Party()
 
-        party.join_party(m.Unit("Stronk1", 20, 7, 1))
-        party.join_party(m.Unit("Stronk2", 25, 6, 3))
+        party.join_party(m.Fighter("Stronk1"))
+        party.join_party(m.Fighter("Stronk2"))
 
         party.test_gettownmap(self.alltowns)
-
+        self.print_mainlog("%s is attempting the life of adventurers!" %(party.partyname))
         self.minimap_createblip(party)
         self.allparties.append(party)
 
-    def test_createtown(self):
-        """DEBUG: Create a persistent town"""
+    def createtown_random(self):
+        """DEBUG: Create a random persistent town"""
         town = m.Town()
+        town.name = town.name + str(len(self.alltowns))
+        self.print_mainlog("A new town, %s, appeared at %d,%d!" %(town.name, town.pos.x, town.pos.y))
         self.minimap_createblip(town)
         self.alltowns.append(town)
 
