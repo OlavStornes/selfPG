@@ -40,6 +40,11 @@ Partynames = [
     "gogo gadgets"
 ]
 
+def roll_d2():
+    return random.randint(1, 2)
+
+def roll_d3():
+    return random.randint(1, 2)
 
 def roll_d6():
     return random.randint(1, 6)
@@ -53,7 +58,23 @@ def roll_d12():
 def roll_d20():
     return random.randint(1, 20)
 
+def roll_dice(n_dice, dicetype):
+    dicesum = 0
+    for x in range(n_dice):
+        dicesum += random.randint(1, dicetype)
+    return dicesum
 
+def increase_stat(growth):
+        #TODO: Make an unique way for HP. Maybe multiply it all at the end?
+        if growth == "low":
+            #1D2
+            return roll_dice(1, 2)
+        elif growth == "med":
+            #1D3
+            return roll_dice(1, 3)
+        elif growth == "high":
+            #3D2
+            return roll_dice(3, 2)
 
 ######  GUI  ######
 
@@ -84,6 +105,9 @@ MAP_HEIGHT = 269
 
 
 ######  UNITS  ######
+
+XP_BASE = 100
+XP_EXPONENT = 1.5
 
 LVL_HPGAIN = 5
 LVL_STRONKGAIN = 2

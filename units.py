@@ -112,18 +112,19 @@ class Party():
 
 class Unit():
 
-    def __init__(self, name, hp, stronk, smart):
+    def __init__(self, name):
         self.name = name
-        self.hp = hp
-        self.maxhp = hp
+        self.maxhp = 100
+        self.hp = self.maxhp
         self.lvl = 1
-        self.xp = 0
-        self.nextlvl = 10 * self.lvl
-        self.stronk = stronk
-        self.smart = smart
+        self.exp = 0
+        self.nextlvl = XP_BASE
+        self.stronk = 10
+        self.smart = 10
         self.target = None
-        
         self.party = None
+
+        self.statgrowth = {"hp": "med", "stronk": "med", "smart": "med"}
 
     def __str__(self):
         return("Name: %s \t Hp: %d/%d\t Strength: %d - LVL %d" 
@@ -155,26 +156,35 @@ class Unit():
         return self.hp > 0
 
     def get_experience(self, amountxp):
-        self.xp += amountxp
+        self.exp += amountxp
         self.print_t ("%s got %d experience!" % (self.name, amountxp))
 
-        if self.xp >= self.nextlvl:
+        if self.exp >= self.nextlvl:
             self.level_up()
+
+    
+
+    def increase_all_stat(self):
+        """Increase all stats of a hero"""
+        #Note: increase_stat is in common.py
+        self.maxhp += increase_stat(self.statgrowth["hp"])
+        self.stronk += increase_stat(self.statgrowth["stronk"])
+        self.smart += increase_stat(self.statgrowth["smart"])
+        
 
 
     def level_up(self):
-        self.xp -= self.nextlvl
-        self.lvl +=1
-        hpgain = LVL_HPGAIN
-        stronkgain = LVL_STRONKGAIN
-        smrtgain = LVL_SMRTGAIN
+        self.exp -= self.nextlvl
+        self.lvl += 1
 
-        self.maxhp += hpgain
-        self.stronk += stronkgain
-        self.smart += smrtgain
-        self.rest()
-            
-        self.print_t("%s Leveled up! Gained %d HP, %d str, %d int" % (self.name, hpgain, stronkgain, smrtgain))
+        #make an exponential growth of next lvl
+        self.nextlvl = int(XP_BASE * (self.lvl ** XP_EXPONENT))
+
+        self.increase_all_stat()
+
+        print (self.statgrowth)
+        print(self.lvl, self.nextlvl, self.stronk, self.hp)
+        self.print_t("%s Leveled up!" % (self.name))
 
 
     def attack(self, target):
@@ -204,6 +214,12 @@ class Unit():
         else:
             self.search_target(hostileparty)
             self.attack(self.target)
+
+class Fighter(Unit):
+    """A fighter that specialies in melee. Stronk dude, but not so smart"""
+    def __init__(self, name, hp, stronk, smart):
+        Unit.__init__(self, name, hp, stronk, smart)
+
 
 
 class Baddie(Unit):

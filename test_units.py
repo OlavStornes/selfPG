@@ -10,9 +10,9 @@ class Herotest(unittest.TestCase):
 
 
     def test_get_experience(self):
-        self.assertEqual(self.guy1.xp, 0)
+        self.assertEqual(self.guy1.exp, 0)
         self.guy1.get_experience(5)
-        self.assertEqual(self.guy1.xp, 5)
+        self.assertEqual(self.guy1.exp, 5)
 
     def test_level_up(self):
         self.assertEqual(self.guy1.lvl, 1)

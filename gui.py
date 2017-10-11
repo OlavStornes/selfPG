@@ -12,6 +12,7 @@ class Character_gui(tk.Frame):
         self.character = character
         self.char_var = tk.StringVar()
         self.statbox = tk.Label(self, textvariable=self.char_var).pack()
+        tk.Button(self, text="LeVEL UP", command=character.level_up).pack()
         self.tick_update()
 
     def update_gui(self):
