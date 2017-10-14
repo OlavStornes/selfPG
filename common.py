@@ -1,5 +1,5 @@
 import random
-
+import time
 
 class Point():
     """A point to keep track off positions"""
@@ -41,23 +41,6 @@ Partynames = [
     "gogo gadgets"
 ]
 
-def roll_d2():
-    return random.randint(1, 2)
-
-def roll_d3():
-    return random.randint(1, 2)
-
-def roll_d6():
-    return random.randint(1, 6)
-
-def roll_d10():
-    return random.randint(1, 10)
-
-def roll_d12():
-    return random.randint(1, 12)
-
-def roll_d20():
-    return random.randint(1, 20)
 
 def roll_dice(n_dice, dicetype):
     dicesum = 0
@@ -65,21 +48,33 @@ def roll_dice(n_dice, dicetype):
         dicesum += random.randint(1, dicetype)
     return dicesum
 
+def increase_stat_hp(hp_growth):
+    """A small variant on the increase stat"""
+    if hp_growth == "low":
+        #3d40+100
+        return roll_dice(3, 40)+100
+    elif hp_growth == "med":
+        #4d40+100
+        return roll_dice(4, 40)+100
+    elif hp_growth == "high":
+        #4d50+100
+        return roll_dice(4, 50)+100
+
 def increase_stat(growth):
-        #TODO: Make an unique way for HP. Maybe multiply it all at the end?
-        if growth == "low":
-            #1D2
-            return roll_dice(1, 2)
-        elif growth == "med":
-            #1D3
-            return roll_dice(1, 3)
-        elif growth == "high":
-            #3D2
-            return roll_dice(3, 2)
+    """Increase stat of a npc"""
+    if growth == "low":
+        #1D2
+        return roll_dice(1, 2)
+    elif growth == "med":
+        #1D3
+        return roll_dice(1, 3)
+    elif growth == "high":
+        #3D2
+        return roll_dice(3, 2)
 
 ######  GUI  ######
 
-PARTY_TITLE = "selfRPG"
+GAME_TITLE = "selfRPG"
 
 
 TEST_ROOMS = 2
@@ -113,6 +108,8 @@ XP_EXPONENT = 1.5
 LVL_HPGAIN = 5
 LVL_STRONKGAIN = 2
 LVL_SMRTGAIN = 1
+
+HP_RATIO = 20
 
 TEST_XPGET = 3
 
