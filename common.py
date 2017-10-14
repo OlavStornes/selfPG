@@ -52,7 +52,7 @@ def increase_stat_hp(hp_growth):
     """A small variant on the increase stat"""
     if hp_growth == "low":
         #3d40+100
-        return roll_dice(3, 40)+100
+        return roll_dice(3, 30)+100
     elif hp_growth == "med":
         #4d40+100
         return roll_dice(4, 40)+100
@@ -126,6 +126,7 @@ TR_LO = 1
 TR_HI = 3
 
 RECRUIT_COST = 1000
+TOWN_REST_PR = 50
 
 ######  EVENTS  ######
 

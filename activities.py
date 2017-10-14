@@ -1,4 +1,3 @@
-import random
 import events as M
 import units as U
 from common import *
@@ -8,14 +7,18 @@ class Travel():
     """An activity where the party travels from one point to another"""
     def __init__(self, party, destination=None):
         self.party = party
-        self.destination = destination
         self.vector_x = 0 
         self.vector_y = 0
-        #HACK: Must implement better later
+        #NOTE: Must implement better later
         test_x = random.randint(2, MAP_WIDTH)
         test_y = random.randint(2, MAP_HEIGHT)
         
-        self.target = Point(test_x, test_y)
+        #Destination is an activity, while target is the position of abovementioned activity
+        self.destination = destination
+        try:
+            self.target = destination.pos
+        except AttributeError:
+            self.target = Point(test_x, test_y)
 
         self.startjourney()
 
@@ -73,7 +76,7 @@ class Travel():
         return dist
 
     def tick(self):
-        #HACK: Early access implementation
+        #NOTE: Early access implementation
 
         if self.vector_x or self.vector_y:
             travel_x = self.progress_towards_dest(self.vector_x)
@@ -104,25 +107,35 @@ class Visit_town():
         self.town = town
 
     def recruit(self):
-        if len(self.party.members) + len(self.party.killed) < MAX_PARTYSIZE:
-            self.party.gold -= RECRUIT_COST
-            newmember = U.Fighter("Newcomer")
-            self.party.join_party(newmember)
-            self.party.print_t(str(newmember.name) + " joined the team!")
-        else:
-            print("Cant recruit anymore: MAX SIZE REACHED")
+        """Recruit someone from the town if the party can afford it"""
+        if self.party.gold > RECRUIT_COST:
+            if len(self.party.members) + len(self.party.killed) < MAX_PARTYSIZE:
+                self.party.gold -= RECRUIT_COST
+                newmember = U.Fighter("Newcomer")
+                self.party.join_party(newmember)
+                self.party.print_t(str(newmember.name) + " joined the team!")
+            else:
+                self.party.print_t("Cant recruit anymore: MAX SIZE REACHED")
+
+    def town_inn_rest(self):
+        """Try to buy a room to rest in"""
+        price_room = (TOWN_REST_PR * len(self.party.members))
+
+        if self.party.gold > price_room:
+            self.party.gold -= price_room
+            self.party.print_t("Payed %d gold for a good nights rest" %(price_room))
+            self.party.team_rest()
 
     def tick(self):
-        #self.party.team_rest()
 
         self.daysintown += 1
 
         if self.daysintown == 2:
-            if self.party.gold > RECRUIT_COST:
-                self.recruit()
+            self.town_inn_rest()
 
         elif self.daysintown == 3:
-            self.party.team_rest()
+            self.recruit()
+
 
         elif self.daysintown > 4:
             #Find a quest in town - ie. a dungeon to crawl
@@ -130,7 +143,6 @@ class Visit_town():
             self.party.activity = Travel(self.party, quest)
 
         #TODO:
-        #good rest
         #attempt sell
         # use money
         # recruit
@@ -138,12 +150,16 @@ class Visit_town():
         # go 
 
 class Dungeon():
+    """A dungeon where a party must traverse to the end. Random battles ensues"""
     def __init__(self, party, rooms):
         self.heroparty = party
         self.depth = rooms
         self.room = 0
         self.dungeon_lvl = self.heroparty.get_teamlevel()
         self.cur_room = None
+
+
+        self.pos = Point(200, 100)
 
     def __str__(self):
         return ("Wandering in a dungeon. Progress: %d of %d rooms " %(self.room, self.depth))
@@ -156,12 +172,15 @@ class Dungeon():
             self.cur_room = M.Fight(self.heroparty, self.dungeon_lvl)
         else:
             self.heroparty.print_t("Nothing of value was found")
-            self.heroparty.team_rest()
 
 
     def dungeon_complete(self):
         self.heroparty.print_t("You are a winner of whole dungeon!!!")
-        self.heroparty.team_rest()
+
+        #HACK: Just a way to start something that intensifies an economy
+        gold_chest = self.dungeon_lvl * 100
+        self.heroparty.gold += gold_chest
+
         #Exiting dungeon
         self.heroparty.activity = None
     

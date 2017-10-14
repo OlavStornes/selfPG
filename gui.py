@@ -2,7 +2,6 @@ import tkinter as tk
 import tkinter.ttk as ttk
 import events as m
 import activities as a
-import random
 from common import *
 
 class Character_gui(tk.Frame):
@@ -13,11 +12,10 @@ class Character_gui(tk.Frame):
         self.char_var = tk.StringVar()
         self.init_detailedstats()
         #self.statbox = tk.Label(self, textvariable=self.char_var).pack()
-        #tk.Button(self, text="DB: LeVEL UP", command=character.level_up).pack() 
         self.tick_update()
 
     def update_gui(self):
-        
+        """Update all variables under a character"""
         name = self.character.name + "\n"
         hp = str(self.character.hp) + "/" + str(self.character.maxhp)+ "\n"
         lvl =  str(self.character.lvl)+ "\n"
@@ -33,12 +31,14 @@ class Character_gui(tk.Frame):
 
     def init_detailedstats(self):
 
-        #self.statframe = tk.LabelFrame(self, text="STATS", labelanchor="n").pack()
-        statvar = ttk.Label(self, textvariable=self.char_var).grid(row=0, column=1)
+        self.statframe = tk.LabelFrame(self, text="STATS", labelanchor="n")
+        self.statframe.pack()
+        statvar = ttk.Label(self.statframe, textvariable=self.char_var).grid(row=0, column=1)
 
         staticstring = "Name: \n HP: \n Lvl: \n Experience: \n Next level: \n Stronk: \n Smart: \n Partyname:"
         
-        statname = ttk.Label(self, text=staticstring, justify="right").grid(row=0, column=0)
+        statname = ttk.Label(self.statframe, text=staticstring, justify="right").grid(row=0, column=0)
+
         
 
 
@@ -79,7 +79,7 @@ class Party_gui(tk.Frame):
 
     def create_statusbar(self):
         self.statusbar_var = tk.StringVar()
-        self.statusbar = tk.Label(self, textvariable=self.statusbar_var, bg="darkgreen").grid(row=0, column=1)
+        self.statusbar = tk.Label(self, textvariable=self.statusbar_var, fg="white", bg="darkgreen").grid(row=0, column=1)
 
     def create_partyframe(self):
         """Create a frame where partymembers go"""
@@ -125,6 +125,8 @@ class Party_gui(tk.Frame):
 
 
         tk.Button(buttonframe, text="Placeholder button", fg="red").pack()
+        self.gold_var = tk.StringVar()
+        tk.Label(buttonframe, textvariable=self.gold_var).pack()
 
     def update_gui(self):
         """Update gui with all elements"""
@@ -143,6 +145,7 @@ class Party_gui(tk.Frame):
         
 
     def update_statusbar(self):
+        self.gold_var.set("Gold: " + str(self.party.gold))
         self.statusbar_var.set(str(self.party.partyname) + ": " + str(self.party.activity))
 
     def tick(self):
@@ -274,7 +277,7 @@ class Main_gui(tk.Frame):
         party = m.Party()
 
         party.join_party(m.Fighter("Stronk1"))
-        party.join_party(m.Fighter("Stronk2"))
+        party.join_party(m.Tank("Tankie"))
 
         party.test_gettownmap(self.alltowns)
         self.print_mainlog("%s is attempting the life of adventurers!" %(party.partyname))

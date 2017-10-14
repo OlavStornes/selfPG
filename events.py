@@ -21,8 +21,7 @@ class Fight():
     def createbaddies(self):
         """Create enemies in a party"""
         #TODO: MORE VARIATION
-        #TODO: IMPLEMENT DIFFICULTY 
-
+        
         n_mobs = random.randint(1, self.difficulty)
         baddielvls = self.difficulty - n_mobs
 
@@ -34,6 +33,7 @@ class Fight():
         for lvlgain in range(baddielvls):
             dude = random.choice(self.baddieparty.members)
             dude.level_up()
+            dude.hp = dude.maxhp
 
     def fight_print(self, sentence):
         if sentence:

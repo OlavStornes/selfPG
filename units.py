@@ -1,9 +1,9 @@
-import random
-from common import *
+
 import events as m
 import activities as a
-import time
 import tkinter as tk
+from common import *
+from ailment import *
 
 class Town():
     """A persistent town inside the world"""
@@ -14,14 +14,12 @@ class Town():
         x = random.randint(10, MAP_WIDTH-10)
         y = random.randint(10, MAP_HEIGHT-10)
 
-        self.pos = Point(x, y)
+        self.pos = Point(110, 110)
 
 class Party():
     """Party-class to keep everything and everyone on the same team organized"""
     def __init__(self, gui_log=None):
         self.partyname = random.choice(Partynames)
-        # self.pos_x = 200 #HACK:
-        # self.pos_y = 200 #HACK:
         self.members = []
         self.killed = []
         self.inventory = []
@@ -29,6 +27,7 @@ class Party():
         self.cur_fight = None
         self.activity = None
         self.townmap = None
+        self.targetparty = None
         self.gold = 0
 
         self.test_setrandompos()
@@ -40,8 +39,8 @@ class Party():
     def test_setrandompos(self):
         x = random.randint(1, MAP_WIDTH)
         y = random.randint(1, MAP_HEIGHT)
-
-        self.pos = Point(x, y)
+        #DEBUG:
+        self.pos = Point(120, 100)
 
     def __str__(self):
         return str(self.partyname) + ": " + str(self.activity)
@@ -128,6 +127,12 @@ class Unit():
 
         self.statgrowth = {"hp": "med", "stronk": "med", "smart": "med"}
 
+        self.statuses = {}
+        self.skills = {}
+
+        self.maxmp = 100
+        self.mana = self.maxmp
+
     def __str__(self):
         return("Name: %s \t Hp: %d/%d\t Strength: %d - LVL %d" 
             %(self.name,    self.hp, self.maxhp, self.stronk, self.lvl))
@@ -170,7 +175,7 @@ class Unit():
     def increase_all_stat(self):
         """Increase all stats of a hero"""
         #Note: increase_stat is in common.py
-        self.maxhp += increase_stat(self.statgrowth["hp"])
+        self.maxhp += increase_stat_hp(self.statgrowth["hp"])
         self.stronk += increase_stat(self.statgrowth["stronk"])
         self.smart += increase_stat(self.statgrowth["smart"])
 
@@ -189,24 +194,24 @@ class Unit():
         #TODO: Better randomized damage
         if target:
             damage = random.randint(int(self.stronk/2), self.stronk)
-            target.hp -= damage
+            target.defend(damage)
             self.print_t("%s hit %s for %d damage! Target has %d hp left" %(self.name, target.name, damage, target.hp))
 
             if target.hp <= 0:
-
+                #Target is killed. Get some xp and remove target
                 self.get_experience(int(target.lvl * 10))
                 self.target = None
 
-    def defend(self, target):
-        #TODO: Some sort of block\damage reduction
-        pass
+    def defend(self, damage):
+        """Recieve damage from another target. NOTE: Some units can defend more effiecently than this"""
+        self.hp -= damage
 
     def rest(self):
         self.hp = self.maxhp
         self.print_t("%s rested to full!" % self.name)
 
-    def tick(self, hostileparty):
-
+    def attack_tick(self, hostileparty):
+        """Main logic for a basic physical attack"""
         if self.target:
             if self.target.is_alive():
                 self.attack(self.target)
@@ -215,6 +220,25 @@ class Unit():
         self.search_target(hostileparty)
         self.attack(self.target)
 
+    def tick_statuses(self):
+        """Tick and remove eventual status aliments that have occured"""
+        #We cant iterate and delete from a dictionary at the same time
+        done_statuses = []
+
+        for key, status in self.statuses.items():
+            status.tick()
+            if status.rounds_left == 0:
+                done_statuses.append(key)
+        
+        for expired in done_statuses:
+            print(str(expired) + "is out of the system")
+            del self.statuses[expired]
+
+    def tick(self, hostileparty):
+        self.tick_statuses()
+
+        self.attack_tick(hostileparty)
+
 class Fighter(Unit):
     """A fighter that specialies in melee. Stronk dude, but not so smart"""
     def __init__(self, name):
@@ -222,23 +246,58 @@ class Fighter(Unit):
         self.statgrowth = {"hp": "med", "stronk": "high", "smart": "low"}
 
 
+class Tank(Unit):
+    """A large fighter that is more defensively capable. Doesnt hit as hard, but can taunt enemies"""
+    def __init__(self, name):
+        Unit.__init__(self, name)
+        self.statgrowth = {"hp": "high", "stronk": "med", "smart": "low"}
+        self.tauntcooldown = 10
+
+    def taunt_unit(self, target):
+        tmp = Taunt(target, self)
+        target.statuses[tmp.statustype] = tmp
+        self.tauntcooldown = 0
+
+    def defend(self, damage):
+
+        #The tank can handle some more hits
+        #TODO: Make this a skill instead
+
+        self.hp -= int(damage * 0.70)
+
+    def tick(self, hostileparty):
+        self.tauntcooldown += 1
+        if self.tauntcooldown >= 20:
+            target = random.choice(hostileparty.members)
+            self.taunt_unit(target)
+        else:
+            self.attack_tick(hostileparty)
+
+
 
 class Baddie(Unit):
     def __init__(self, name):
         Unit.__init__(self, name)
         #NOTE: For now they have an disadvantage
-        self.hp = int(self.hp * 0.75)
+        self.hp = int(self.hp * 0.85)
         self.maxhp = self.hp
-        self.stronk = int(self.stronk * 0.75)
+        self.stronk = int(self.stronk * 0.85)
         self.statgrowth = {"hp": "low", "stronk": "low", "smart": "low"}
 
     def search_target(self, hostileparty):
         """Enemy targeting: Find a random hero and hit him"""
-        #TODO: AGGRO-abillity from tanks etc
         if hostileparty.team_alive():
             self.get_target(random.choice(hostileparty.members))
 
-    def tick(self, hostileparty):
+    def attack_tick(self, hostileparty):
 
-        self.search_target(hostileparty)
+
+        print (self.statuses)
+
+        if TAUNT in self.statuses:
+            self.get_target(self.statuses[TAUNT].target)
+            print("Taunted by" + str(self.target))
+        else:
+            self.search_target(hostileparty)
+            
         self.attack(self.target)
