@@ -231,7 +231,7 @@ class Unit():
                 done_statuses.append(key)
         
         for expired in done_statuses:
-            print(str(expired) + "is out of the system")
+            self.print_t(str(expired) + "is out of the system")
             del self.statuses[expired]
 
     def tick(self, hostileparty):
@@ -267,7 +267,7 @@ class Tank(Unit):
 
     def tick(self, hostileparty):
         self.tauntcooldown += 1
-        if self.tauntcooldown >= 20:
+        if self.tauntcooldown >= 20 and (self.hp > self.maxhp/2):
             target = random.choice(hostileparty.members)
             self.taunt_unit(target)
         else:

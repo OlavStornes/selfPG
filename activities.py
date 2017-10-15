@@ -143,7 +143,8 @@ class Visit_town():
             self.party.activity = Travel(self.party, quest)
 
         #TODO:
-        #attempt sell
+        # Attempt sell
+        # Hospital
         # use money
         # recruit
         # plan yourney
@@ -151,22 +152,27 @@ class Visit_town():
 
 class Dungeon():
     """A dungeon where a party must traverse to the end. Random battles ensues"""
-    def __init__(self, party, rooms):
+    def __init__(self, party, rooms, pos=None):
         self.heroparty = party
         self.depth = rooms
         self.room = 0
         self.dungeon_lvl = self.heroparty.get_teamlevel()
         self.cur_room = None
 
-
-        self.pos = Point(200, 100)
+        if pos:
+            self.pos = pos
+        else:
+            x = random.randint(2, MAP_WIDTH)
+            y = random.randint(2, MAP_HEIGHT)
+            self.pos = Point(x, y)
+        
+            
 
     def __str__(self):
-        return ("Wandering in a dungeon. Progress: %d of %d rooms " %(self.room, self.depth))
+        return ("A dungeon. Progress: %d of %d rooms " %(self.room, self.depth))
 
     def newroom(self):
         """Create a new room. TODO: Get more varied rooms"""
-        self.print_dungeon()
         dice = roll_dice(1, 20)
         if dice < 20:
             self.cur_room = M.Fight(self.heroparty, self.dungeon_lvl)
@@ -183,17 +189,6 @@ class Dungeon():
 
         #Exiting dungeon
         self.heroparty.activity = None
-    
-    def print_dungeon(self):
-        border = ""
-        mid = ""
-        for i in range(self.depth):
-            border += "###|"
-            if self.room == i:
-                mid += " X ="
-            else:
-                mid += "   ="
-        self.heroparty.print_t ("DUNGEON MAP\n" + border + "\n" + mid + "\n" + border)
 
     def tick(self):
         if self.heroparty.team_alive():
