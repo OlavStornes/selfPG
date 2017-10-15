@@ -14,7 +14,7 @@ class Town():
         x = random.randint(10, MAP_WIDTH-10)
         y = random.randint(10, MAP_HEIGHT-10)
 
-        self.pos = Point(110, 110)
+        self.pos = Point(x, y)
 
 class Party():
     """Party-class to keep everything and everyone on the same team organized"""
@@ -39,8 +39,8 @@ class Party():
     def test_setrandompos(self):
         x = random.randint(1, MAP_WIDTH)
         y = random.randint(1, MAP_HEIGHT)
-        #DEBUG:
-        self.pos = Point(120, 100)
+
+        self.pos = Point(x, y)
 
     def __str__(self):
         return str(self.partyname) + ": " + str(self.activity)
@@ -292,11 +292,9 @@ class Baddie(Unit):
     def attack_tick(self, hostileparty):
 
 
-        print (self.statuses)
-
         if TAUNT in self.statuses:
             self.get_target(self.statuses[TAUNT].target)
-            print("Taunted by" + str(self.target))
+            #print("Taunted by" + str(self.target))
         else:
             self.search_target(hostileparty)
             

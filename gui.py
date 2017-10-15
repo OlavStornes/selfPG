@@ -8,14 +8,17 @@ class Character_gui(tk.Frame):
     def __init__(self, master, character):
         tk.Frame.__init__(self, master, borderwidth=5, relief='groove')
         self.pack()
+        self.master.title("Character sheet: %s" %(character.name))
         self.character = character
         self.char_var = tk.StringVar()
         self.init_detailedstats()
+        self.init_charportrait()
+        self.init_healthbar()
         #self.statbox = tk.Label(self, textvariable=self.char_var).pack()
         self.tick_update()
 
     def update_gui(self):
-        """Update all variables under a character"""
+        """Update all variables in a character sheet"""
         name = self.character.name + "\n"
         hp = str(self.character.hp) + "/" + str(self.character.maxhp)+ "\n"
         lvl =  str(self.character.lvl)+ "\n"
@@ -28,16 +31,36 @@ class Character_gui(tk.Frame):
         varstring = name + hp + lvl + exp + nextlvl + stronk + smart + party
 
         self.char_var.set(varstring)
+        self.hpbar_var.set(self.character.hp)
+
+    def init_charportrait(self):
+        """Creates a character portrait"""
+
+        #as of now, classes should have images identical to their class name
+        img_path = "img/%s.gif" %(str(self.character.__class__.__name__))
+        
+        try:
+            self.portrait = tk.PhotoImage(file=img_path)
+        except:
+            self.portrait = tk.PhotoImage(file="img/GenericUnit.gif")
+
+        portraitlabel = tk.Label(self, image=self.portrait)
+        portraitlabel.grid(row=0, column=1)
 
     def init_detailedstats(self):
 
         self.statframe = tk.LabelFrame(self, text="STATS", labelanchor="n")
-        self.statframe.pack()
         statvar = ttk.Label(self.statframe, textvariable=self.char_var).grid(row=0, column=1)
 
         staticstring = "Name: \n HP: \n Lvl: \n Experience: \n Next level: \n Stronk: \n Smart: \n Partyname:"
-        
+    
         statname = ttk.Label(self.statframe, text=staticstring, justify="right").grid(row=0, column=0)
+        self.statframe.grid(row=0, column=0, sticky="n")
+
+    def init_healthbar(self):
+        self.hpbar_var = tk.IntVar()
+        self.hpbar = ttk.Progressbar(self, maximum=self.character.maxhp, mode="determinate", variable = self.hpbar_var)
+        self.hpbar.grid(row=1, column=0)
 
         
 
@@ -52,6 +75,7 @@ class Party_gui(tk.Frame):
     def __init__(self, master, party):
         tk.Frame.__init__(self, master)
         self.pack()
+        self.master.title("Party status of: %s" %(party.partyname))
         self.init_widgets()
         self.party = party
         self.createText_log()
@@ -159,6 +183,7 @@ class Party_gui(tk.Frame):
 class Main_gui(tk.Frame):
     def __init__(self, master=None):
         tk.Frame.__init__(self, master)
+        self.master.title(GAME_TITLE)
         self.debug_tick = tk.IntVar()
         self.pack()
         self.allparties = []
@@ -185,13 +210,16 @@ class Main_gui(tk.Frame):
     def minimap_createblip(self, obj):
         """Returns an integer which is a type-ID for this blip on the minimap"""
 
-        testframe = tk.Frame(None, relief="flat")
+        #NOTE: Resizing or own images would be a good thing
         if isinstance(obj, m.Party):
-            tk.Label(testframe, text="-X-", bg="black", fg="white").grid(row=1)
-        elif isinstance(obj, m.Town):
-            tk.Label(testframe, bitmap="info", bg="black", fg="white").grid(row=1)
+            image = "questhead"
+            color = "green"
 
-        minimapID = self.minimap.create_window(obj.pos.x, obj.pos.y, window=testframe)
+        elif isinstance(obj, m.Town):
+            image = "info"
+            color = "white"
+
+        minimapID = self.minimap.create_bitmap(obj.pos.x, obj.pos.y, bitmap=image, foreground=color)
 
         self.blip_dict[obj] = minimapID
 
@@ -207,24 +235,25 @@ class Main_gui(tk.Frame):
     def update_minimap(self):
         """Update map coordinates"""
         for obj, map_id in self.blip_dict.items():
+
             self.minimap.coords(map_id, obj.pos.x, obj.pos.y)
 
     def init_partyoverview(self):
         """Create a frame where parties go"""
         self.allparty_var = tk.StringVar()
-        self.partyframe = tk.Listbox(self, 
-                        bg="green",
-                        width=60,
-                        height=0,
-                        listvariable=self.allparty_var,
-                        activestyle="dotbox",
-                        exportselection=0
-                        )
+        self.partyframe = tk.Listbox(self,
+                                     bg="green",
+                                     width=60,
+                                     height=0,
+                                     listvariable=self.allparty_var,
+                                     activestyle="dotbox",
+                                     exportselection=0)
 
         self.allparty_var.set(self.allparties)
         self.partyframe.bind("<Button-1>", func=self.open_partywindow)
 
-        self.partyframe.grid(row=0 ,column=0, rowspan=10, sticky=tk.N)
+        self.partyframe.grid(row=0, column=0, rowspan=10, sticky=tk.N)
+
 
     def init_textlog(self):
         """Create a log for main-related stuff"""
