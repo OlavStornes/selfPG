@@ -4,6 +4,7 @@ import events as m
 import activities as a
 from common import *
 
+
 class Character_gui(tk.Frame):
     def __init__(self, master, character):
         tk.Frame.__init__(self, master, borderwidth=5, relief='groove')
@@ -37,12 +38,12 @@ class Character_gui(tk.Frame):
         """Creates a character portrait"""
 
         #as of now, classes should have images identical to their class name
-        img_path = "img/%s.gif" %(str(self.character.__class__.__name__))
+        img_path = "img/portraits/%s.gif" %(str(self.character.__class__.__name__))
         
         try:
             self.portrait = tk.PhotoImage(file=img_path)
         except:
-            self.portrait = tk.PhotoImage(file="img/GenericUnit.gif")
+            self.portrait = tk.PhotoImage(file="img/portraits/GenericUnit.gif")
 
         portraitlabel = tk.Label(self, image=self.portrait)
         portraitlabel.grid(row=0, column=1)
@@ -212,16 +213,18 @@ class Main_gui(tk.Frame):
 
         #NOTE: Resizing or own images would be a good thing
         if isinstance(obj, m.Party):
-            image = "questhead"
-            color = "green"
+            imagepath = "img/icons/cowled.png"
 
         elif isinstance(obj, m.Town):
-            image = "info"
-            color = "white"
+            imagepath = "img/icons/village.png"
 
-        minimapID = self.minimap.create_bitmap(obj.pos.x, obj.pos.y, bitmap=image, foreground=color)
+        image = tk.PhotoImage(file=imagepath)#.subsample(2) #<-- shrink the image as of now
+        
+        minimapID = self.minimap.create_image(obj.pos.x, obj.pos.y, image=image)
 
-        self.blip_dict[obj] = minimapID
+        
+        # Must save the image as a reference. NOTE: Look into optimisations of icon storage
+        self.blip_dict[obj] = (minimapID, image) 
 
     def minimap_removeblip(self, obj):
         """Remove a blip from the map"""
@@ -234,9 +237,9 @@ class Main_gui(tk.Frame):
 
     def update_minimap(self):
         """Update map coordinates"""
-        for obj, map_id in self.blip_dict.items():
-
-            self.minimap.coords(map_id, obj.pos.x, obj.pos.y)
+        #Blip_tuple containts a minimap_id and the image for given minimap_id-object
+        for obj, blip_tuple in self.blip_dict.items():
+            self.minimap.coords(blip_tuple[0], obj.pos.x, obj.pos.y)
 
     def init_partyoverview(self):
         """Create a frame where parties go"""
