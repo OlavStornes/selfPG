@@ -106,11 +106,15 @@ class Visit_town():
         self.daysintown = 0
         self.town = town
 
+    def hospital_trip(self):
+        pass
+
     def recruit(self):
         """Recruit someone from the town if the party can afford it"""
         if self.party.gold > RECRUIT_COST:
             if len(self.party.members) + len(self.party.killed) < MAX_PARTYSIZE:
-                self.party.gold -= RECRUIT_COST
+                #self.party.gold -= RECRUIT_COST
+                self.town.inputgold(self.party, RECRUIT_COST)
                 newmember = U.Fighter("Newcomer")
                 self.party.join_party(newmember)
                 self.party.print_t(str(newmember.name) + " joined the team!")
@@ -122,7 +126,8 @@ class Visit_town():
         price_room = (TOWN_REST_PR * len(self.party.members))
 
         if self.party.gold > price_room:
-            self.party.gold -= price_room
+            #self.party.gold -= price_room
+            self.town.inputgold(self.party, price_room)
             self.party.print_t("Payed %d gold for a good nights rest" %(price_room))
             self.party.team_rest()
 

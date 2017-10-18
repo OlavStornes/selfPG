@@ -10,15 +10,49 @@ class Town():
     def __init__(self):
         self.name = TOWN_NAME
         self.reputation = 0
+        self.gold = 5000
+
+        self.day = 100
+
+        #Used to communicate with main gui as of now.
+        self.party_queue = 0
 
         x = random.randint(10, MAP_WIDTH-10)
         y = random.randint(10, MAP_HEIGHT-10)
 
         self.pos = Point(x, y)
 
+    def __str__(self):
+        return "%s @ %s. Rep: %s. Gold: %d. Nextmoney: %d" %(self.name, self.pos, self.reputation, self.gold, self.day)
+
+    def get_interest(self):
+        #TODO: GET IN MORE CASH SOMEHOW
+        self.gold += self.gold * 0.10 
+
+    def buy_mercenaries(self):
+        #TODO: CREATE PARTY?
+        self.party_queue += 1
+        self.gold -= 5000
+
+    def inputgold(self, party, income):
+        """Pay the town a sort of service"""
+        party -= income
+        self.gold += income
+
+    def tick(self):
+        self.day -= 1
+
+        if self.day <= 0:
+            self.get_interest()
+            self.day = 100
+
+        if self.gold >= 5000:
+            self.buy_mercenaries()
+
+
 class Party():
     """Party-class to keep everything and everyone on the same team organized"""
-    def __init__(self, gui_log=None):
+    def __init__(self, gui_log=None, point=None):
         self.partyname = random.choice(Partynames)
         self.members = []
         self.killed = []
@@ -30,7 +64,10 @@ class Party():
         self.targetparty = None
         self.gold = 0
 
-        self.test_setrandompos()
+        if isinstance(point, Point):
+            self.pos = Point(point.x, point.y)
+        else:
+            self.test_setrandompos()
 
     def test_gettownmap(self, townmap):
         """ALPHA: get worldmap from main game"""

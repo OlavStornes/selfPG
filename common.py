@@ -7,6 +7,8 @@ class Point():
         self.x = x
         self.y = y
 
+    def __str__(self):
+        return "%d, %d" %(self.x, self.y)
 
     def distance(self, target):
         """Return a distance in units"""

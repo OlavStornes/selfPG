@@ -66,7 +66,7 @@ class Character_gui(tk.Frame):
         self.hpbar = ttk.Progressbar(self, maximum=self.character.maxhp,
                                      mode="determinate", variable=self.hpbar_var)
 
-        self.hpbar.grid(row=1, column=0, sticky="WE")
+        self.hpbar.grid(row=1, column=0, columnspan = 2, sticky="WE")
 
     def tick_update(self):
         self.update_gui()
@@ -196,12 +196,28 @@ class Main_gui(tk.Frame):
 
         # Start with one town existing
         self.createtown_random()
+        self.init_townoverview()
 
     def init_minimap(self):
         self.minimap = tk.Canvas(
             self, bg="black", width=MAP_WIDTH, height=MAP_HEIGHT)
         self.minimap.grid(row=0, column=3)
         self.blip_dict = {}
+
+    def init_townoverview(self):
+        self.alltowns_var = tk.StringVar()
+        self.townframe = tk.Listbox(self,
+                                     bg="blue",
+                                     fg="white",
+                                     width=60,
+                                     height=0,
+                                     listvariable=self.alltowns_var,
+                                     activestyle="dotbox",
+                                     exportselection=0)
+
+        self.townframe.grid(row=0, column = 4, sticky="n")
+
+        self.alltowns_var.set(self.alltowns)
 
     def minimap_createblip(self, obj):
         """Returns an integer which is a type-ID for this blip on the minimap"""
@@ -242,6 +258,7 @@ class Main_gui(tk.Frame):
         self.allparty_var = tk.StringVar()
         self.partyframe = tk.Listbox(self,
                                      bg="green",
+                                     fg="white",
                                      width=60,
                                      height=0,
                                      listvariable=self.allparty_var,
@@ -320,6 +337,22 @@ class Main_gui(tk.Frame):
         self.minimap_createblip(party)
         self.allparties.append(party)
 
+    def createparty_fromtown(self, town):
+        """Creates a party inside a town"""
+        party = m.Party(point=town.pos)
+
+        party.join_party(m.Fighter("Stronk1"))
+        party.join_party(m.Tank("Tankie"))
+
+        town.party_queue -= 1
+        
+
+        party.test_gettownmap(self.alltowns)
+        self.print_mainlog(
+            "%s is attempting the life of adventurers!" % (party.partyname))
+        self.minimap_createblip(party)
+        self.allparties.append(party)
+
     def createtown_random(self):
         """DEBUG: Create a random persistent town"""
         town = m.Town()
@@ -334,8 +367,14 @@ class Main_gui(tk.Frame):
 
         self.allparty_var.set(self.allparties)
 
+    def update_townlist(self):
+        self.townframe.config(height=len(self.alltowns), width=60)
+
+        self.alltowns_var.set(self.alltowns)
+
     def update_gui(self):
         self.update_partylist()
+        self.update_townlist()
         self.update_minimap()
 
     def test_tick(self):
@@ -347,6 +386,11 @@ class Main_gui(tk.Frame):
                 self.minimap_removeblip(party)
                 self.allparties.remove(party)
         self.update_gui()
+
+        for town in self.alltowns:
+            town.tick()
+            if town.party_queue:
+                self.createparty_fromtown(town)
 
         if self.debug_tick.get():
             self.after(self.tick_rate, self.test_tick)
