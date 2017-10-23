@@ -183,7 +183,7 @@ class Main_gui(tk.Frame):
     def __init__(self, master=None):
         tk.Frame.__init__(self, master)
         self.master.title(GAME_TITLE)
-        self.debug_tick = tk.IntVar()
+        self.auto_tick = tk.IntVar()
         self.tick_rate = GUI_UPDATE_RATE
         self.pack()
         self.allparties = []
@@ -311,9 +311,9 @@ class Main_gui(tk.Frame):
         scale.set(GUI_UPDATE_RATE)
         scale.grid(row=7, column=0, sticky="WE")
 
-        self.debug_tick.set(1)
+        self.auto_tick.set(1)
         tk.Checkbutton(buttonframe, text="DB: AUTOTICK",
-                       variable=self.debug_tick).pack()
+                       variable=self.auto_tick).pack()
 
     def update_tickspeed(self, tickspeed):
 
@@ -354,7 +354,7 @@ class Main_gui(tk.Frame):
         self.allparties.append(party)
 
     def createtown_random(self):
-        """DEBUG: Create a random persistent town"""
+        """Create a random persistent town"""
         town = m.Town()
         town.name = town.name + str(len(self.alltowns))
         self.print_mainlog("A new town, %s, appeared at %d,%d!" %
@@ -392,7 +392,8 @@ class Main_gui(tk.Frame):
             if town.party_queue:
                 self.createparty_fromtown(town)
 
-        if self.debug_tick.get():
+    
+        if self.auto_tick.get():
             self.after(self.tick_rate, self.test_tick)
 
 

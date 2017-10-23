@@ -23,7 +23,7 @@ class Town():
         self.pos = Point(x, y)
 
     def __str__(self):
-        return "%s @ %s. Rep: %s. Gold: %d. Nextmoney: %d" %(self.name, self.pos, self.reputation, self.gold, self.day)
+        return "%s @ %s. Rep: %s. Gold: %d. Tax-income in: %d" %(self.name, self.pos, self.reputation, self.gold, self.day)
 
     def get_interest(self):
         #TODO: GET IN MORE CASH SOMEHOW
@@ -36,7 +36,7 @@ class Town():
 
     def inputgold(self, party, income):
         """Pay the town a sort of service"""
-        party -= income
+        party.gold -= income
         self.gold += income
 
     def tick(self):
@@ -74,6 +74,7 @@ class Party():
         self.townmap = townmap
 
     def test_setrandompos(self):
+        """Set a random position on the world map"""
         x = random.randint(1, MAP_WIDTH)
         y = random.randint(1, MAP_HEIGHT)
 
@@ -84,8 +85,17 @@ class Party():
         
 
     def join_party(self, person):
+        """Join a party"""
         person.party = self
         self.members.append(person)
+
+    def resurrect_hero(self, person):
+        """Resurrect a hero who has been killed"""
+        if person in self.killed:
+            self.members.append(person)
+            person.hp += 10
+            self.killed.remove(person)
+
 
 
     def print_t(self, sentence):
@@ -98,6 +108,7 @@ class Party():
             pass
 
     def team_alive(self):
+        """Returns a boolean value if someone is alive on the team"""
         return len(self.members) > 0
 
     def team_endoffight(self):
