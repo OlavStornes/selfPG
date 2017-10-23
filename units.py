@@ -122,6 +122,12 @@ class Party():
             tmp += point.lvl
         return tmp
 
+    def get_killedlvl(self):
+        tmp = 0
+        for i, point in enumerate(self.killed):
+            tmp += point.lvl
+        return tmp
+
     def team_getexp(self, xp):
         for unit in self.members:
             unit.get_experience(xp)
@@ -243,7 +249,7 @@ class Unit():
         if target:
             damage = random.randint(int(self.stronk/2), self.stronk)
             target.defend(damage)
-            self.print_t("%s hit %s for %d damage! Target has %d hp left" %(self.name, target.name, damage, target.hp))
+            self.print_t("%s hit %s for %d damage!" %(self.name, target.name, damage))
 
             if target.hp <= 0:
                 #Target is killed. Get some xp and remove target

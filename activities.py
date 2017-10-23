@@ -122,16 +122,17 @@ class Visit_town():
     def hospital_trip(self):
         """Wait at the hospital for dead heroes to get alive"""
     
-        #Gotta pay up for healing services
-        #NOTE: Should i just eliminate dead people that heroes cant afford? :thinking:
-        res_price = len(self.party.killed)*100
-        self.town.inputgold(self.party, res_price)
-
-        #This will take some days
+        #First time at the hospital. Pay up and chill
         if self.days_left == self.days_hospitalized:
+            #Gotta pay up for healing services
+            #NOTE: Should i just eliminate dead people that heroes cant afford? :thinking:
+            res_price = len(self.party.killed)*self.party.get_killedlvl()*50
+            self.town.inputgold(self.party, res_price)
             self.party.print_t("Visiting the hospital for a few turns..")
+            self.is_hospitalised = True 
+        
+        #This will take some days
         self.days_left -= 1 
-        self.is_hospitalised = True
 
         if self.days_left == 0:
             self.is_hospitalised = False
@@ -165,6 +166,21 @@ class Visit_town():
         
         self.has_rested = True
 
+    def plan_journey(self):
+        #Create a random vector with a given distance away
+        x_vector = random.randint(-TOWN_QUEST_DISTANCE, TOWN_QUEST_DISTANCE)
+        y_vector = random.randint(-TOWN_QUEST_DISTANCE, TOWN_QUEST_DISTANCE)
+
+        #Apply vector to current location
+        x = self.town.pos.x + x_vector
+        y = self.town.pos.y + y_vector
+
+        #edge cases on the map
+        x = statistics.median([0, x, MAP_WIDTH])
+        y = statistics.median([0, y, MAP_HEIGHT])
+        
+        return Point(x, y)
+
     def tick(self):
         """Main tick for visiting a town"""
 
@@ -186,7 +202,8 @@ class Visit_town():
 
         else:
             #Find a quest in town - ie. a dungeon to crawl
-            quest = Dungeon(self.party, 3)
+            marker = self.plan_journey()
+            quest = Dungeon(self.party, 3, marker)
             self.party.activity = Travel(self.party, quest)
 
         #TODO:

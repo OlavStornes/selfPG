@@ -1,5 +1,6 @@
 import random
 import time
+import statistics
 
 class Point():
     """A point to keep track off positions"""
@@ -129,6 +130,8 @@ TR_HI = 3
 
 RECRUIT_COST = 1000
 TOWN_REST_PR = 50
+
+TOWN_QUEST_DISTANCE = 100
 
 ######  EVENTS  ######
 
