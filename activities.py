@@ -2,6 +2,7 @@ import events as M
 import units as U
 from common import *
 
+"""Activities which a party will be doing at a longer period of time, often connected to a specific geographical location"""
 
 class Travel():
     """An activity where the party travels from one point to another"""

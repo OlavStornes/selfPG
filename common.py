@@ -2,6 +2,8 @@ import random
 import time
 import statistics
 
+"""Variables and secondary functions which is neccecary for several spaces/not bound to one spesific class"""
+
 class Point():
     """A point to keep track off positions"""
     def __init__(self, x=None, y=None):

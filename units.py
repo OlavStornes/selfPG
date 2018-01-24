@@ -1,9 +1,11 @@
-
 import events as m
 import activities as a
 import tkinter as tk
 from common import *
 from ailment import *
+
+# units.py
+# The physical objects with their individual behavior inside the world, both living and dead.
 
 class Town():
     """A persistent town inside the world"""

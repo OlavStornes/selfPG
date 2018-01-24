@@ -1,6 +1,7 @@
 from common import *
 from units import *
 
+"""Events that happens during an activity. Short-term and resolved in a relatively quick matter"""
 
 class Fight():
     """Class for fights between the hero-party and a baddie-party"""

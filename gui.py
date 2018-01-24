@@ -4,6 +4,8 @@ import events as m
 import activities as a
 from common import *
 
+#Gui.py:
+#GUI-implementation which handles the main loop and everything mainly front-end
 
 class Character_gui(tk.Frame):
     def __init__(self, master, character):

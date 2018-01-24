@@ -1,5 +1,6 @@
 from common import *
 
+"""Code contains different status ailments, such as buffs, debuffs and other temporary effects"""
 
 class Ailment():
     """General class of an status ailment"""
