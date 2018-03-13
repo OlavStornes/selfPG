@@ -60,8 +60,11 @@ class Character_gui(tk.Frame):
 
         staticstring = "Name: \n HP: \n Lvl: \n Experience: \n Next level: \n Stronk: \n Smart: \n Partyname:"
 
-        statname = ttk.Label(self.statframe, text=staticstring,
-                             justify="right").grid(row=0, column=0)
+        statname = ttk.Label(
+            self.statframe,
+            text=staticstring,
+            justify="right"
+        ).grid(row=0, column=0)
         self.statframe.grid(row=0, column=0, sticky="n")
 
     def init_healthbar(self):
@@ -69,8 +72,9 @@ class Character_gui(tk.Frame):
         self.hpbar = ttk.Progressbar(
             self,
             maximum=self.character.maxhp,
-            mode="determinate", 
-            variable=self.hpbar_var)
+            mode="determinate",
+            variable=self.hpbar_var
+        )
 
         self.hpbar.grid(row=1, column=0, columnspan=2, sticky="WE")
 
@@ -114,14 +118,15 @@ class Party_gui(tk.Frame):
     def create_partyframe(self):
         """Create a frame where partymembers go"""
         self.pframe_var = tk.StringVar()
-        self.partyframe = tk.Listbox(self,
-                                     bg="green",
-                                     width=0,
-                                     height=0,
-                                     listvariable=self.pframe_var,
-                                     activestyle="dotbox",
-                                     exportselection=0
-                                     )
+        self.partyframe = tk.Listbox(
+            self,
+            bg="green",
+            width=0,
+            height=0,
+            listvariable=self.pframe_var,
+            activestyle="dotbox",
+            exportselection=0
+        )
 
         self.pframe_var.set(self.party.members)
         self.partyframe.bind("<Button-1>", func=self.open_charwindow)
@@ -132,11 +137,13 @@ class Party_gui(tk.Frame):
     def create_baddieframe(self):
 
         self.bframe_var = tk.StringVar()
-        self.baddielist = tk.Listbox(self,
-                                     bg="red",
-                                     width=0,
-                                     height=0,
-                                     listvariable=self.bframe_var)
+        self.baddielist = tk.Listbox(
+            self,
+            bg="red",
+            width=0,
+            height=0,
+            listvariable=self.bframe_var
+        )
 
         self.baddielist.grid(row=2, column=0, rowspan=4, sticky=tk.N)
 
@@ -151,10 +158,16 @@ class Party_gui(tk.Frame):
 
     def init_widgets(self):
         buttonframe = tk.Frame(self)
-        buttonframe.grid(row=BUT_FRAME_ROW,
-                         column=BUT_FRAME_COL, rowspan=BUT_ROWSPAN)
+        buttonframe.grid(
+            row=BUT_FRAME_ROW,
+            column=BUT_FRAME_COL,
+            rowspan=BUT_ROWSPAN
+        )
 
-        tk.Button(buttonframe, text="Placeholder button", fg="red").pack()
+        tk.Button(
+            buttonframe,
+            text="Placeholder button",
+            fg="red").pack()
         self.gold_var = tk.StringVar()
         tk.Label(buttonframe, textvariable=self.gold_var).pack()
 
@@ -174,8 +187,11 @@ class Party_gui(tk.Frame):
 
     def update_statusbar(self):
         self.gold_var.set("Gold: " + str(self.party.gold))
-        self.statusbar_var.set(str(self.party.partyname) +
-                               ": " + str(self.party.activity))
+        self.statusbar_var.set(
+            str(self.party.partyname) +
+            ": " +
+            str(self.party.activity)
+        )
 
     def tick(self):
         """Main-loop with ticks"""
@@ -212,14 +228,16 @@ class Main_gui(tk.Frame):
 
     def init_townoverview(self):
         self.alltowns_var = tk.StringVar()
-        self.townframe = tk.Listbox(self,
-                                    bg="blue",
-                                    fg="white",
-                                    width=60,
-                                    height=0,
-                                    listvariable=self.alltowns_var,
-                                    activestyle="dotbox",
-                                    exportselection=0)
+        self.townframe = tk.Listbox(
+            self,
+            bg="blue",
+            fg="white",
+            width=60,
+            height=0,
+            listvariable=self.alltowns_var,
+            activestyle="dotbox",
+            exportselection=0
+        )
 
         self.townframe.grid(row=0, column=4, sticky="n")
 
@@ -262,14 +280,16 @@ class Main_gui(tk.Frame):
     def init_partyoverview(self):
         """Create a frame where parties go"""
         self.allparty_var = tk.StringVar()
-        self.partyframe = tk.Listbox(self,
-                                     bg="green",
-                                     fg="white",
-                                     width=60,
-                                     height=0,
-                                     listvariable=self.allparty_var,
-                                     activestyle="dotbox",
-                                     exportselection=0)
+        self.partyframe = tk.Listbox(
+            self,
+            bg="green",
+            fg="white",
+            width=60,
+            height=0,
+            listvariable=self.allparty_var,
+            activestyle="dotbox",
+            exportselection=0
+        )
 
         self.allparty_var.set(self.allparties)
         self.partyframe.bind("<Button-1>", func=self.open_partywindow)
@@ -304,22 +324,42 @@ class Main_gui(tk.Frame):
         buttonframe = tk.Frame(self)
         buttonframe.grid(row=6, column=0, sticky="SE")
 
-        tk.Button(buttonframe, text="QUIT", fg="red", command=self.quit).pack()
-        tk.Button(buttonframe, text="START", fg="green",
-                  command=self.test_tick).pack()
-        tk.Button(buttonframe, text="Createparty", fg="blue",
-                  command=self.test_createparty).pack()
-        tk.Button(buttonframe, text="Create town", fg="blue",
-                  command=self.createtown_random).pack()
+        tk.Button(
+            buttonframe,
+            text="QUIT",
+            fg="red",
+            command=self.quit).pack()
+        tk.Button(
+            buttonframe,
+            text="START",
+            fg="green",
+            command=self.test_tick).pack()
+        tk.Button(
+            buttonframe,
+            text="Createparty",
+            fg="blue",
+            command=self.test_createparty).pack()
+        tk.Button(
+            buttonframe,
+            text="Create town",
+            fg="blue",
+            command=self.createtown_random).pack()
 
-        scale = tk.Scale(self, from_=1, to=GUI_UPDATE_RATE,
-                         orient="horizontal", command=self.update_tickspeed)
+        scale = tk.Scale(
+            self,
+            from_=1,
+            to=GUI_UPDATE_RATE,
+            orient="horizontal",
+            command=self.update_tickspeed
+        )
         scale.set(GUI_UPDATE_RATE)
         scale.grid(row=7, column=0, sticky="WE")
 
         self.auto_tick.set(1)
-        tk.Checkbutton(buttonframe, text="DB: AUTOTICK",
-                       variable=self.auto_tick).pack()
+        tk.Checkbutton(
+            buttonframe,
+            text="DB: AUTOTICK",
+            variable=self.auto_tick).pack()
 
     def update_tickspeed(self, tickspeed):
 
@@ -362,8 +402,10 @@ class Main_gui(tk.Frame):
         """Create a random persistent town"""
         town = m.Town()
         town.name = town.name + str(len(self.alltowns))
-        self.print_mainlog("A new town, %s, appeared at %d,%d!" %
-                           (town.name, town.pos.x, town.pos.y))
+        self.print_mainlog(
+            "A new town, %s, appeared at %d,%d!" %
+            (town.name, town.pos.x, town.pos.y)
+        )
         self.minimap_createblip(town)
         self.alltowns.append(town)
 
