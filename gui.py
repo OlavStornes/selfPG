@@ -4,8 +4,9 @@ import events as m
 import activities as a
 from common import *
 
-#Gui.py:
-#GUI-implementation which handles the main loop and everything mainly front-end
+# Gui.py:
+# GUI-implementation which handles the main loop and everything mainly front-end
+
 
 class Character_gui(tk.Frame):
     def __init__(self, master, character):
@@ -65,10 +66,13 @@ class Character_gui(tk.Frame):
 
     def init_healthbar(self):
         self.hpbar_var = tk.IntVar()
-        self.hpbar = ttk.Progressbar(self, maximum=self.character.maxhp,
-                                     mode="determinate", variable=self.hpbar_var)
+        self.hpbar = ttk.Progressbar(
+            self,
+            maximum=self.character.maxhp,
+            mode="determinate", 
+            variable=self.hpbar_var)
 
-        self.hpbar.grid(row=1, column=0, columnspan = 2, sticky="WE")
+        self.hpbar.grid(row=1, column=0, columnspan=2, sticky="WE")
 
     def tick_update(self):
         self.update_gui()
@@ -209,15 +213,15 @@ class Main_gui(tk.Frame):
     def init_townoverview(self):
         self.alltowns_var = tk.StringVar()
         self.townframe = tk.Listbox(self,
-                                     bg="blue",
-                                     fg="white",
-                                     width=60,
-                                     height=0,
-                                     listvariable=self.alltowns_var,
-                                     activestyle="dotbox",
-                                     exportselection=0)
+                                    bg="blue",
+                                    fg="white",
+                                    width=60,
+                                    height=0,
+                                    listvariable=self.alltowns_var,
+                                    activestyle="dotbox",
+                                    exportselection=0)
 
-        self.townframe.grid(row=0, column = 4, sticky="n")
+        self.townframe.grid(row=0, column=4, sticky="n")
 
         self.alltowns_var.set(self.alltowns)
 
@@ -347,7 +351,6 @@ class Main_gui(tk.Frame):
         party.join_party(m.Tank("Tankie"))
 
         town.party_queue -= 1
-        
 
         party.test_gettownmap(self.alltowns)
         self.print_mainlog(
@@ -394,7 +397,6 @@ class Main_gui(tk.Frame):
             if town.party_queue:
                 self.createparty_fromtown(town)
 
-    
         if self.auto_tick.get():
             self.after(self.tick_rate, self.test_tick)
 
