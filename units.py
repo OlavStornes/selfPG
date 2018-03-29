@@ -1,6 +1,5 @@
 import events as m
 import activities as a
-import tkinter as tk
 from common import *
 from ailment import *
 
@@ -104,8 +103,7 @@ class Party():
         """Prints inside the party-log of chosen team"""
         #Everything crashes if a party-window has been opened and closed. Avoiding the problem here
         try:
-            self.log.insert(tk.END, str(sentence) + "\n")
-            self.log.see(tk.END)
+            print (sentence)
         except:
             pass
 
