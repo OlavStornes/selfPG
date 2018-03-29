@@ -1,6 +1,6 @@
 import main 
 import dash
-from dash.dependencies import Input, Output
+from dash.dependencies import Input, Output, Event
 import dash_core_components as dcc
 import dash_html_components as html
 from loremipsum import get_sentences
@@ -54,8 +54,8 @@ def display_content(value):
         return 2
 
 
-@app.callback(Output('hidden-div', 'children'),[Input('game_update', 'n_intervals')])
-def game_tick(interval):
+@app.callback(Output('hidden-div', 'children'),events =[Event('game_update', 'interval')])
+def game_tick():
     print("updating")
     #app.game.test_tick()
 
