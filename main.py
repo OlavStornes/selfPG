@@ -1,11 +1,14 @@
 import events as m
 import activities as a
 from common import *
+from db_api import *
 from time import sleep
 
 
 class Game():
     def __init__(self, master=None):
+        self.db = Database()
+
         self.tick_rate = GUI_UPDATE_RATE
         self.allparties = []
         self.alltowns = []
@@ -80,6 +83,7 @@ class Game():
     def mainloop(self):
         while True:
             self.test_tick()
+            self.db.insert_table_parties(self.allparties)
             sleep(self.tick_rate)
             
 
