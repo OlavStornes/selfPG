@@ -53,11 +53,15 @@ class Fight():
         for unit in self.baddieparty.members:
             print(unit)
 
+    def clear_partytarget(self):
+        for unit in self.heroparty.members:
+            unit.baddieparty = None
 
     def victory(self):
         self.fight_print("Victory!! ")
 
         self.heroparty.team_getexp(10)
+        self.clear_partytarget()
 
 
     def endofbattle(self):
