@@ -25,8 +25,22 @@ SelfPG is a growing project with a lot of promises and not that much depth as of
  * Market value on items based on how much it has been selled/buyed in the near past.
 
 
+# Dependencies
+
+
+
+```
+jsonpickle
+dash==0.21.0                    # The core dash backend
+dash-renderer==0.11.3           # The dash front-end
+dash-html-components==0.9.0     # HTML components
+dash-core-components==0.21.0rc1 # Supercharged components
+plotly --upgrade                # Plotly graphing library used in examples
+```
+
 # Startup
-SelfPG can in the current state be started from __gui.py__. 
+SelfPG has two parts: One is the server who generates data, and the other is the Dash GUI which reads input.
+First, run __main.py__ to generate data. Then run the front-end server with __dash_gui.py__. 
 
 # Disclaimer
 1. What SelfPG isn't

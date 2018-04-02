@@ -4,7 +4,7 @@ from dash.dependencies import Input, Output, Event, State
 import dash_core_components as dcc
 import dash_html_components as html
 import plotly.graph_objs as go
-from loremipsum import get_sentences
+#from loremipsum import get_sentences
 import db_api
 import json
 
@@ -35,8 +35,6 @@ app.layout = html.Div([
     'margin-right': 'auto'
 })
 
-unitlist = ["unit 1", "unit 2", "unit 3"]
-
 
 @app.callback(
     Output('tab-output', 'children'),
@@ -44,33 +42,33 @@ unitlist = ["unit 1", "unit 2", "unit 3"]
     [State('hidden-div', 'children')],
     events=[Event('game_update', 'interval')])
 def display_content(tab_value, jsoninfo):
-    json_out = json.loads(jsoninfo)
-    print (type(json_out))
+    parties_list = json.loads(jsoninfo)
+
     if tab_value == 1:
         # OVERWIEW
-        optionlist = []
-        for number, party in enumerate(json_out):
-            optionlist.append(
-                {"label": party["partyname"], "tab_value": number})
+        return html.Table(
+        # Header
+        [1, 2, 3, 4, 5] +
 
-        return dcc.RadioItems(
-            options=optionlist,
-            value=1,
-            labelStyle={'display': 'inline-block'}
-        )
+        # Body
+        [1, 2, 3]
+    )
+            
+
 
     elif tab_value == 2:
         # MAIN MAP
 
         def get_mappos(grade):
             poslist = []
-            for index, pos in enumerate(json_out):
-                poslist.append(json_out[index]["pos"][grade])
+            for index, pos in enumerate(parties_list):
+                poslist.append(parties_list[index]["pos"][grade])
             return poslist
+
         def get_mapname():
             namelist = []
-            for index, party in enumerate(json_out):
-                namelist.append(json_out[index]["partyname"])
+            for index, party in enumerate(parties_list):
+                namelist.append(parties_list[index]["partyname"])
             return namelist
 
         return dcc.Graph(
@@ -87,14 +85,14 @@ def display_content(tab_value, jsoninfo):
                 ],
                 layout={
                     "width": 1000,
-                    "geo":{
+                    "geo": {
                         "showframe": True,
                         "showcoastlines": False,
                         "bgcolor": 0x000FF,
                         "lonaxis": {
                             "showgrid": True
                         },
-                        "lataxis":{
+                        "lataxis": {
                             "showgrid": True
                         }
 
@@ -102,13 +100,23 @@ def display_content(tab_value, jsoninfo):
                 }
 
             ),
-            id='main-map',
-            style={'width': 700}
+            id='main-map'
+            #style={'width': 700}
         )
 
+    elif tab_value == 3:
+        optionlist = []
+        for number, party in enumerate(parties_list):
+            optionlist.append(
+                {"label": party["partyname"], "tab_value": number})
+
+        return dcc.RadioItems(
+            options=optionlist,
+            labelStyle={'display': 'inline-block'}
+        )
 
 @app.callback(Output('hidden-div', 'children'),
-              events=[Event('game_update', 'interval')])
+    events=[Event('game_update', 'interval')])
 def update_tick():
     db = db_api.Database()
     output = db.select_last_entry()
