@@ -1,129 +1,93 @@
-"""
-Simple web app to monitor the CPU and memory usage of the server process.
-Requires psutil.
-
-This app might be running at the demo server: http://flexx1.zoof.io
-"""
 
 from time import time
 import psutil
 import asyncio
+from flexx import app, event, ui, config, util
+from leafgui import *
+from exampledata import xdat
 
-from flexx import app, event, ui
+xdata = xdat
 
-nsamples = 16
+def get_mapname():
+    namelist = []
+    for index, party in enumerate(xdat):
+        namelist.append(xdat[index]["partyname"])
+    return namelist
 
-
-class Relay(event.Component):
-
-    number_of_connections = event.IntProp(settable=True)
-
+class Overview(ui.Widget):
     def init(self):
-        self.update_number_of_connections()
-        self.refresh()
+        self.combo = ui.ComboBox(
+            editable=True,
+            options=(get_mapname())
+        )
 
-    @app.manager.reaction('connections_changed')
-    def update_number_of_connections(self, *events):
-        n = 0
-        for name in app.manager.get_app_names():
-            sessions = app.manager.get_connections(name)
-            n += len(sessions)
-        self.set_number_of_connections(n)
-
-    @event.emitter
-    def system_info(self):
-        return dict(cpu=psutil.cpu_percent(),
-                    mem=psutil.virtual_memory().percent,
-                    sessions=self.number_of_connections,
-                    total_sessions=app.manager.total_sessions,
-                    )
-
-    def refresh(self):
-        self.system_info()
-        asyncio.get_event_loop().call_later(1, self.refresh)
+        self.label = ui.Label()
+        with ui.FormLayout() as self.partystats:
+            self.b1 = ui.Label(title='Name: ')
+            self.b2 = ui.Label(title="Position: ")
+            self.b3 = ui.Label(title="Gold: ")
+            ui.Widget(flex=1)  # Spacing
 
 
-# Create global relay
-relay = Relay()
 
 
-class Monitor(app.PyComponent):
+    @event.reaction
+    def update_label(self):
+        if self.combo.selected_index is not -1:
+            x = self.combo.selected_index
+            self.b1.set_text(xdat[x].partyname)
+            pos = str(xdat[x].pos.x) +", "+ str(xdat[x].pos.y)
+            self.b2.set_text(pos)
+            self.b3.set_text(xdat[x].gold)
+            
 
-    cpu_count = psutil.cpu_count()
-    nsamples = nsamples
-
+class Leafmap(leaflet.LeafletExample):
     def init(self):
+        with ui.HBox():
+            self.leaflet = leaflet.LeafletWidget(
+                flex=1,
+                center=(52, 4.1),
+                zoom=12,
+                show_scale=lambda: self.cbs.checked,
+                show_layers=lambda: self.cbl.checked,
+            )
 
-        with ui.VBox():
-            ui.Label(html='<h3>Server monitor</h3>')
-            if app.current_server().serving[0] == 'localhost':
-                # Don't do this for a public server
-                self.button = ui.Button(text='Do some work')
-                self.button.reaction(self._do_work, 'mouse_down')
-            self.view = MonitorView(flex=1)
-
-    @relay.reaction('system_info')  # note that we connect to relay
-    def _push_info(self, *events):
-        if not self.session.status:
-            return relay.disconnect('system_info:' + self.id)
-        for ev in events:
-            self.view.update_info(dict(cpu=ev.cpu,
-                                       mem=ev.mem,
-                                       sessions=ev.sessions,
-                                       total_sessions=ev.total_sessions))
-
-    def _do_work(self, *events):
-        etime = time() + len(events)
-        # print('doing work for %i s' % len(events))
-        while time() < etime:
-            pass
-
-
-class MonitorView(ui.VBox):
-
+class Mainmap(ui.CanvasWidget):
     def init(self):
-        self.start_time = time()
+        super().init()
 
-        self.status = ui.Label(text='...')
-        self.cpu_plot = ui.PlotWidget(flex=1, style='width: 640px; height: 320px;',
-                                      xdata=[], yrange=(0, 100),
-                                      ylabel='CPU usage (%)')
+        self.ctx = self.node.getContext('2d')
+        self.set_capture_mouse(1)
+        self._last_pos = (0, 0)
+        self.pos = {"x": 0, "y":0}
 
-
-    @event.action
-    def update_info(self, info):
-
-        # Set connections
-        n = info.sessions, info.total_sessions
-        self.status.set_html('There are %i connected clients.<br />' % n[0] +
-                             'And in total we served %i connections.<br />' % n[1])
-
-        # Prepare plots
-        times = list(self.cpu_plot.xdata)
-        times.append(time() - self.start_time)
-        times = times[-self.nsamples:]
-
-        # cpu data
-        usage = list(self.cpu_plot.ydata)
-        usage.append(info.cpu)
-        usage = usage[-self.nsamples:]
-        self.cpu_plot.set_data(times, usage)
-
-        # mem data
-        usage = list(self.mem_plot.ydata)
-        usage.append(info.mem)
-        usage = usage[-self.nsamples:]
-        self.mem_plot.set_data(times, usage)
-
+    @event.reaction('mouse_down')
+    def on_down(self, *events):
+        self.ctx.clearRect(0, 0, 1000, 1000)
+        self.ctx.strokeRect(self.pos["x"], self.pos["y"],75,75)
+        self.pos["x"] += 30
 
 class MultiApp(ui.TabLayout):
     def init(self):
-        MonitorView(title='Test')
+        Overview(title='Test')
+        Mainmap(title='Main map')
+        ui.YoutubeWidget(title='utubs', source="AqbLNXcITcU")
+        Leafmap("whodis")
+
+    def init_leaflet(self, title):
+        leaf = leaflet.LeafletExample(title=title)
+        leaf.leaflet.remove_layer('http://a.tile.openstreetmap.org/', 'OpenStreetMap')
+
+        return leaf
+        
+
+
 
 
 if __name__ == '__main__':
-    a = app.App(MultiApp)
-    a.serve()
+    config.hostname = "0.0.0.0"
+    app.launch(MultiApp, 'app')  # for use during development
+    #app.start()
+    app.run()
+
     
-    m = a.launch('browser')  # for use during development
-    app.start()
