@@ -16,12 +16,6 @@ class Game():
         # Start with one town existing
         self.createtown_random()
 
-    def init_minimap(self):
-        self.minimap = tk.Canvas(
-            self, bg="black", width=MAP_WIDTH, height=MAP_HEIGHT)
-        self.minimap.grid(row=0, column=3)
-        self.blip_dict = {}
-
     def print_mainlog(self, string):
         print (string)
 
