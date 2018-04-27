@@ -14,14 +14,27 @@ class Firebase():
         cred = credentials.Certificate('./api_key/self-pg-firebase-adminsdk.json')
         opt = {'databaseURL': 'https://self-pg.firebaseio.com/'}
         self.default_app = firebase_admin.initialize_app(cred, opt)
+        self.ref = db.reference()
+
+
+    def send_parties(self, partylist):
+        parties_ref = self.ref.child('parties')
+                
+        for party in partylist:
+            parties_ref.child(party.partyname).set({
+            'members': [x.name for x in party.members],
+            "position" : {
+                "lat": party.pos.x,
+                "lon": party.pos.y},
+            "activity" : str(party.activity),
+            "gold": party.gold            
+            })
 
     def store_tick(self, partylist):
-        ref = db.reference()
-        parties_ref = ref.child('parties')
 
+        self.send_parties(partylist)
 
-        jsonlist = jsonpickle.encode(party, unpicklable=True, max_depth=2)
+        
 
-        parties_ref.set(jsonlist)
 
 
