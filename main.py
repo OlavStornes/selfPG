@@ -1,13 +1,13 @@
 import events as m
 import activities as a
 from common import *
-from db_api import *
+from db_api import Firebase
 from time import sleep
 
 
 class Game():
     def __init__(self, master=None):
-        self.db = Database()
+        self.fb = Firebase()
 
         self.tick_rate = GUI_UPDATE_RATE
         self.allparties = []
@@ -83,7 +83,7 @@ class Game():
     def mainloop(self):
         while True:
             self.test_tick()
-            self.db.insert_table_parties(self.allparties)
+            self.fb.store_tick(self.allparties)
             sleep(self.tick_rate)
             
 
