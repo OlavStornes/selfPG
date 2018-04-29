@@ -1,14 +1,15 @@
 import events as m
 import activities as a
+from uuid import uuid4
 from common import *
 from ailment import *
-
 # units.py
 # The physical objects with their individual behavior inside the world, both living and dead.
 
 class Town():
     """A persistent town inside the world"""
     def __init__(self):
+        self.id = str(uuid4())
         self.name = TOWN_NAME
         self.reputation = 0
         self.gold = 5000
@@ -54,6 +55,7 @@ class Town():
 class Party():
     """Party-class to keep everything and everyone on the same team organized"""
     def __init__(self, gui_log=None, point=None):
+        self.id = str(uuid4())
         self.partyname = random.choice(Partynames)
         self.members = []
         self.killed = []

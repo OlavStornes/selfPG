@@ -21,13 +21,15 @@ class Firebase():
         parties_ref = self.ref.child('parties')
                 
         for party in partylist:
-            parties_ref.child(party.partyname).set({
-            'members': [x.name for x in party.members],
-            "position" : {
-                "lat": party.pos.x,
-                "lon": party.pos.y},
-            "activity" : str(party.activity),
-            "gold": party.gold            
+            parties_ref.child(party.id).set({
+                'id': party.id,
+                'partyname': party.partyname,
+                'members': [x.name for x in party.members],
+                'position' : {
+                    'lat': party.pos.x,
+                    'lon': party.pos.y},
+                'activity' : str(party.activity),
+                'gold': party.gold            
             })
 
     def store_tick(self, partylist):
