@@ -27,14 +27,32 @@ class Firebase():
                 'members': [x.name for x in party.members],
                 'position' : {
                     'lat': party.pos.x,
-                    'lon': party.pos.y},
+                    'lon': party.pos.y
+                    },
                 'activity' : str(party.activity),
                 'gold': party.gold            
             })
 
-    def store_tick(self, partylist):
+    def send_towns(self, townlist):
+        towns_ref = self.ref.child('towns')
+
+        for town in townlist:
+            towns_ref.child(town.id).set({
+                'id': town.id,
+                'name': town.name,
+                'reputation': town.reputation,
+                'gold': town.gold,
+                'taxdays': town.day,
+                'position' : {
+                    'lat': town.pos.x,
+                    'lon': town.pos.y
+                    }
+            })
+
+    def store_tick(self, partylist, townlist):
 
         self.send_parties(partylist)
+        self.send_towns(townlist)
 
         
 

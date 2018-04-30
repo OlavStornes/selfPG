@@ -77,7 +77,7 @@ class Game():
     def mainloop(self):
         while True:
             self.test_tick()
-            self.fb.store_tick(self.allparties)
+            self.fb.store_tick(self.allparties, self.alltowns)
             sleep(self.tick_rate)
             
 
