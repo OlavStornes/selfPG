@@ -15,6 +15,11 @@ class Firebase():
         opt = {'databaseURL': 'https://self-pg.firebaseio.com/'}
         self.default_app = firebase_admin.initialize_app(cred, opt)
         self.ref = db.reference()
+        self.init_new_database()
+
+
+    def init_new_database(self):
+        self.ref.delete()
 
 
     def send_parties(self, partylist):
