@@ -26,16 +26,26 @@ SelfPG is a growing project with a lot of promises and not that much depth as of
 
 
 # Startup
-SelfPG can in the current state be started from __gui.py__. 
+
+## New changes
+SelfPG was originally built around a local enviroment in mind, using TKinter for the interface and presentation. 
+
+Lately SelfPG has been converted from a complete package over to a pure backend, sending streams of data to a cloud database ([Firebase](https://self-pg.firebaseapp.com/)). Reasons for this are: 
+- More users on one single enviroment
+- Go a step into HTML/JS-development
+- Play around with a cloud database that easily gives real time data without hassling with websockets and such
+- Easier to share the work with others
+
+If you really want to see how it was with tkinter, there is a branch called `LEGACY_tkinter` that you can explore. Be noted that this is already outdated, and may or may not be removed later on.
+
 
 # Disclaimer
 1. What SelfPG isn't
     * A playable game in a traditional sense
     * A high end simulation with fine tuned details
 2. What SelfPG attempts to be:
-    * A personal project to deepens the knowledge on python and self-taught introduction of GUI-development
+    * A personal project to deepen the knowledge on python, HTML and JS
     * Something fun to watch as the computer does all the work
-    * 
 
 
 
