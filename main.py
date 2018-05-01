@@ -17,6 +17,7 @@ class Game():
         self.createtown_random()
 
     def print_mainlog(self, string):
+        self.fb.send_main_message(string)
         print (string)
 
 

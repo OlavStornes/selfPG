@@ -21,6 +21,7 @@ class Firebase():
         self.parties_ref = self.ref.child('parties')
         self.towns_ref = self.ref.child('towns')
         self.members_ref = self.ref.child('members')
+        self.globalmsg_ref = self.ref.child('globalmsg')
         
         
         
@@ -79,6 +80,10 @@ class Firebase():
                     'lon': town.pos.y
                     }
             })
+
+    def send_main_message(self, string):
+        self.globalmsg_ref.push(string)
+
 
     def store_tick(self, partylist, townlist):
 
