@@ -171,6 +171,7 @@ class Unit():
     """The groundwork for every npc"""
     def __init__(self, name):
         self.name = name
+        self.id = str(uuid4())
         self.maxhp = 100
         self.hp = self.maxhp
         self.lvl = 1

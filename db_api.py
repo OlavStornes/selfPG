@@ -17,19 +17,29 @@ class Firebase():
         self.ref = db.reference()
         self.init_new_database()
 
+        # Initialise references
+        self.parties_ref = self.ref.child('parties')
+        self.towns_ref = self.ref.child('towns')
+        self.members_ref = self.ref.child('members')
+        
+        
+        
 
     def init_new_database(self):
         self.ref.delete()
 
 
     def send_parties(self, partylist):
-        parties_ref = self.ref.child('parties')
                 
         for party in partylist:
-            parties_ref.child(party.id).set({
+            
+
+
+            self.send_members(party.members)
+            self.parties_ref.child(party.id).set({
                 'id': party.id,
                 'partyname': party.partyname,
-                'members': [x.name for x in party.members],
+                'members': {x.id:True for x in party.members},
                 'position' : {
                     'lat': party.pos.x,
                     'lon': party.pos.y
@@ -38,11 +48,27 @@ class Firebase():
                 'gold': party.gold            
             })
 
+    def send_members(self, memberlist):
+        for member in memberlist:
+            self.members_ref.child(member.id).set({
+                'id': member.id,
+                'name': member.name,
+                'maxHp': member.maxhp,
+                'hp': member.hp,
+                'lvl': member.lvl,
+                'xp': member.exp,
+                'nextLvl': member.nextlvl,
+                'str': member.stronk,
+                'int': member.smart,
+                'partyid': member.party.id,
+                'status': str(member.statuses)
+            })
+
+
     def send_towns(self, townlist):
-        towns_ref = self.ref.child('towns')
 
         for town in townlist:
-            towns_ref.child(town.id).set({
+            self.towns_ref.child(town.id).set({
                 'id': town.id,
                 'name': town.name,
                 'reputation': town.reputation,
