@@ -43,7 +43,7 @@ class Firebase():
                 'members': {x.id:True for x in party.members},
                 'position' : {
                     'lat': party.pos.x,
-                    'lon': party.pos.y
+                    'lng': party.pos.y
                     },
                 'activity' : str(party.activity),
                 'gold': party.gold            
@@ -77,7 +77,7 @@ class Firebase():
                 'taxdays': town.day,
                 'position' : {
                     'lat': town.pos.x,
-                    'lon': town.pos.y
+                    'lng': town.pos.y
                     }
             })
 
